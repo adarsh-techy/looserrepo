@@ -1,0 +1,324 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  passwordHash    String
+  name            String
+  role            String           @default("PARTNER")
+  avatar          String?
+  totpSecret      String?
+  totpEnabled     Boolean          @default(false)
+  pagePermissions String           @default("[\"*\"]")
+  lastLogin       DateTime?
+  lastCheckIn     DateTime?
+  notificationEmail String?
+  sirenSoundPref  Boolean          @default(true)
+  themePref       String           @default("dark")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  businessItems   BusinessItem[]
+  futurePlans     FuturePlan[]
+  vaultItems      PasswordVaultItem[]
+  authoredNotes   SharedNote[]     @relation("AuthoredSharedNotes")
+  receivedNotes   SharedNote[]     @relation("ReceivedSharedNotes")
+  secretNotes     SecretNote[]     @relation("OwnerSecretNotes")
+  designatedSecretNotes SecretNote[] @relation("DesignatedSecretNotes")
+  emergencyRequests EmergencyAccessRequest[]
+  auditLogs       AuditLog[]
+  notifications   Notification[]
+  dayToDayNotes   DayToDayNote[]   @relation("AuthorDayToDayNotes")
+  sentMessages    ChatMessage[]    @relation("SentChatMessages")
+  receivedMessages ChatMessage[]   @relation("ReceivedChatMessages")
+  workProjects    WorkProject[]    @relation("UserWorkProjects")
+  paymentRecords  PaymentRecord[]  @relation("UserPaymentRecords")
+  moneyRecords    MoneyRecord[]    @relation("UserMoneyRecords")
+  trashItems      TrashItem[]      @relation("UserTrashItems")
+}
+
+model DayToDayNote {
+  id          String   @id @default(uuid())
+  date        String   // "YYYY-MM-DD" e.g. "2026-09-18"
+  title       String
+  content     String
+  category    String   @default("General")
+  priority    String   @default("MEDIUM")
+  isCompleted Boolean  @default(false)
+  time        String?
+  tags        String   @default("[]")
+  authorId    String
+  author      User     @relation("AuthorDayToDayNotes", fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+}
+
+model BusinessItem {
+  id          String   @id @default(uuid())
+  title       String
+  category    String   @default("General")
+  description String
+  tags        String   @default("[]")
+  links       String   @default("[]")
+  attachments String   @default("[]")
+  isShared    Boolean  @default(true)
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FuturePlan {
+  id            String   @id @default(uuid())
+  title         String
+  targetQuarter String   @default("Q4 2026")
+  priority      String   @default("MEDIUM")
+  status        String   @default("PLANNING")
+  description   String
+  milestones    String   @default("[]")
+  links         String   @default("[]")
+  adNotes       String?  @default("")
+  adNotesUpdatedAt DateTime?
+  nsNotes       String?  @default("")
+  nsNotesUpdatedAt DateTime?
+  sharedNotes   String?  @default("")
+  sharedNotesUpdatedAt DateTime?
+  sharedNotesUpdatedBy String? @default("")
+  ownerId       String
+  owner         User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model PasswordVaultItem {
+  id                String   @id @default(uuid())
+  accountName       String
+  usernameOrEmail   String
+  encryptedPassword String
+  iv                String
+  authTag           String
+  websiteUrl        String?
+  notes             String?
+  attachments       String   @default("[]")
+  ownerId           String
+  owner             User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model SharedNote {
+  id            String    @id @default(uuid())
+  title         String
+  content       String
+  authorId      String
+  author        User      @relation("AuthoredSharedNotes", fields: [authorId], references: [id], onDelete: Cascade)
+  recipientId   String
+  recipient     User      @relation("ReceivedSharedNotes", fields: [recipientId], references: [id], onDelete: Cascade)
+  reminderDate  DateTime?
+  isRead        Boolean   @default(false)
+  readAt        DateTime?
+  promptOnLogin Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model SecretNote {
+  id                     String    @id @default(uuid())
+  title                  String
+  category               String
+  encryptedContent       String
+  salt                   String
+  iv                     String
+  authTag                String
+  notePasswordHash       String
+  hint                   String?
+  recoveryQuestion       String?
+  recoveryAnswerHash     String?
+  recoveryPayload        String?
+  recoveryQuestions      String?   @default("[]")
+  ownerId                String
+  owner                  User      @relation("OwnerSecretNotes", fields: [ownerId], references: [id], onDelete: Cascade)
+  designatedRecipientId  String
+  designatedRecipient    User      @relation("DesignatedSecretNotes", fields: [designatedRecipientId], references: [id], onDelete: Cascade)
+  waitingPeriodHours     Int       @default(48)
+  ownerLastCheckInAt     DateTime  @default(now())
+  status                 String    @default("ACTIVE")
+  postDeathVerified      Boolean   @default(false)
+  deathVerificationNotes String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  emergencyRequests      EmergencyAccessRequest[]
+}
+
+model EmergencyAccessRequest {
+  id                 String     @id @default(uuid())
+  secretNoteId       String
+  secretNote         SecretNote @relation(fields: [secretNoteId], references: [id], onDelete: Cascade)
+  requesterId        String
+  requester          User       @relation(fields: [requesterId], references: [id], onDelete: Cascade)
+  reason             String
+  status             String     @default("PENDING")
+  requestDate        DateTime   @default(now())
+  eligibleReleaseDate DateTime
+  reviewNotes        String?
+  sirenTriggered     Boolean    @default(true)
+  deniedAt           DateTime?
+  releasedAt         DateTime?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+}
+
+model AuditLog {
+  id             String   @id @default(uuid())
+  eventType      String
+  severity       String   @default("INFO")
+  actorId        String?
+  actor          User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  actorEmail     String?
+  targetType     String?
+  targetId       String?
+  ipAddress      String?
+  userAgent      String?
+  metadata       String   @default("{}")
+  sirenTriggered Boolean  @default(false)
+  createdAt      DateTime @default(now())
+}
+
+model Notification {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title          String
+  message        String
+  type           String   @default("INFO")
+  isRead         Boolean  @default(false)
+  metadata       String   @default("{}")
+  createdAt      DateTime @default(now())
+}
+
+model ChatMessage {
+  id          String    @id @default(uuid())
+  content     String
+  senderId    String
+  sender      User      @relation("SentChatMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  recipientId String
+  recipient   User      @relation("ReceivedChatMessages", fields: [recipientId], references: [id], onDelete: Cascade)
+  isDelivered Boolean   @default(true)
+  deliveredAt DateTime? @default(now())
+  isRead      Boolean   @default(false)
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([senderId, recipientId])
+  @@index([createdAt])
+}
+
+model WorkProject {
+  id              String    @id @default(uuid())
+  name            String
+  clientName      String
+  careOf          String?
+  place           String?
+  country         String?
+  clientPhone     String?
+  clientWhatsapp  String?
+  techStack       String    @default("[]")
+  hostedPlatform  String?
+  gitLink         String?
+  notes           String?
+  credentials     String    @default("[]")
+  attachments     String    @default("[]")
+  paymentAmount   Float?
+  paymentCurrency String?   @default("USD")
+  paymentVia      String?
+  paymentStatus   String    @default("PENDING")
+  platformDueDate DateTime?
+  dbDueDate       DateTime?
+  projectDueDate  DateTime?
+  status          String    @default("IN_PROGRESS")
+  isShared        Boolean   @default(true)
+  ownerId         String
+  owner           User      @relation("UserWorkProjects", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([ownerId])
+  @@index([status])
+}
+
+model PaymentRecord {
+  id                String    @id @default(uuid())
+  monthYear         String    // e.g. "2026-09" (YYYY-MM for sorting and grouping)
+  monthLabel        String    // e.g. "September 2026"
+  date              String    // e.g. "2026-09-18"
+  amount            Float
+  currency          String    @default("INR")
+  type              String    @default("INCOME") // INCOME or EXPENSE
+  forWhat           String    // Purpose / description
+  category          String?   @default("General") // Client Payment, Hosting, Software, Freelance, Office, Hardware, Tax, etc.
+  paymentMethod     String?   @default("Bank Transfer") // Bank Transfer, UPI, Stripe, PayPal, Cash, Credit Card
+  invoiceNumber     String?   // Optional invoice reference
+  clientName        String?   // Client / customer who paid (for income)
+  invoiceAttachment String?   // JSON object or DataURL of invoice file { name, size, type, dataUrl }
+  specialNotes      String?   // Remarks, TDS, GSTIN, ITR filing notes
+  isShared          Boolean   @default(true)
+  ownerId           String
+  owner             User      @relation("UserPaymentRecords", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([ownerId])
+  @@index([monthYear])
+  @@index([date])
+}
+
+model MoneyRecord {
+  id          String   @id @default(uuid())
+  monthYear   String   // e.g. "2026-09" (YYYY-MM)
+  monthLabel  String   // e.g. "September 2026"
+  date        String   // "YYYY-MM-DD"
+  type        String   @default("EXPENSE") // INCOME or EXPENSE
+  amount      Float
+  paymentMode String   @default("GPAY") // GPAY, CASH, ACCOUNT_TRANSFER, OTHER
+  forWhat     String   // Purpose e.g. "Dinner", "Fuel", "Freelance", "Rent"
+  place       String?  // Place / Location e.g. "Starbucks", "Kochi", "Amazon"
+  notes       String?  // Special remarks
+  isShared    Boolean  @default(true)
+  ownerId     String
+  owner       User     @relation("UserMoneyRecords", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([ownerId])
+  @@index([monthYear])
+  @@index([date])
+}
+
+model TrashItem {
+  id          String   @id @default(uuid())
+  originalId  String
+  itemType    String   // WORK, MONEY, PAYMENT, BUSINESS, FUTURE_PLAN, DAY_TO_DAY, VAULT, SHARED_NOTE, SECRET_NOTE
+  title       String
+  subtitle    String?
+  deleteReason String?
+  itemData    String   // JSON stringified payload of the record
+  deletedById String
+
+  deletedBy   User     @relation("UserTrashItems", fields: [deletedById], references: [id], onDelete: Cascade)
+  deletedAt   DateTime @default(now())
+
+  @@index([itemType])
+  @@index([deletedById])
+  @@index([deletedAt])
+}
