@@ -159,7 +159,16 @@ export async function updateUserPermissions(req: AuthenticatedRequest, res: Resp
     const { id } = req.params;
     const { pagePermissions } = req.body;
 
-    const targetUser = await prisma.user.findUnique({ where: { id } });
+    const targetUser = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        role: true,
+        pagePermissions: true,
+        email: true,
+        name: true,
+      },
+    });
     if (!targetUser) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -233,13 +242,23 @@ export async function updateUserRole(req: AuthenticatedRequest, res: Response) {
       return res.status(400).json({ error: 'Role is required' });
     }
 
-    const targetUser = await prisma.user.findUnique({ where: { id } });
+    const targetUser = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        role: true,
+        pagePermissions: true,
+        email: true,
+        name: true,
+      },
+    });
     if (!targetUser) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     const normalizedRole = role.toString().trim().toUpperCase();
-    const permsToSave = normalizedRole === 'AD' ? '["*"]' : targetUser.pagePermissions;
+    const existingPerms = (targetUser as any).pagePermissions || '["*"]';
+    const permsToSave = normalizedRole === 'AD' ? '["*"]' : existingPerms;
 
     const updatedUser = await prisma.user.update({
       where: { id },
