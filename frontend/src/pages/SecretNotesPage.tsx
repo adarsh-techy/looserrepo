@@ -57,8 +57,23 @@ export const SecretNotesPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const partnerStatus = useSelector((state: RootState) => state.auth.partnerStatus);
 
-  // Dynamic Partner Name: If NS is logged in -> "Adarsh", if AD is logged in -> "NS" / Partner name
-  const partnerName = user?.role === 'NS' ? 'Adarsh' : (partnerStatus?.partner?.name || 'NS');
+  // Dynamic Partner Name:
+  // When AD is logged in, the target partner whose secret notes AD is viewing is "Vishnu"
+  // When NS is logged in, the target partner whose secret notes NS is viewing is "Adarsh"
+  const partnerName = (() => {
+    if (user?.role === 'AD') {
+      const fetched = partnerStatus?.partner?.name;
+      if (fetched && !fetched.toLowerCase().includes('adarsh')) {
+        return fetched.replace(/\bns\b/i, '').trim() || 'Vishnu';
+      }
+      return 'Vishnu';
+    }
+    const fetched = partnerStatus?.partner?.name;
+    if (fetched && fetched.toLowerCase().includes('adarsh')) {
+      return 'Adarsh';
+    }
+    return 'Adarsh';
+  })();
 
   // Multi-step Emergency Protocol Overlay State
   const [isPageUnlocked, setIsPageUnlocked] = useState(false);

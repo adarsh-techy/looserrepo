@@ -66,7 +66,7 @@ export const PartnerBreachAlertModal: React.FC = () => {
   const currentAlert = alerts[currentAlertIndex] || alerts[0];
   const metadata = currentAlert.metadata || {};
   const actorRole = metadata.actorRole || (user?.role === 'AD' ? 'NS' : 'AD');
-  const actorName = metadata.actorName || (user?.role === 'AD' ? 'Partner NS' : 'Partner AD');
+  const actorName = metadata.actorName || (user?.role === 'AD' ? 'Vishnu (NS)' : 'Adarsh (AD)');
   const ipAddress = metadata.ipAddress || '127.0.0.1';
   const hoursSinceActive = metadata.hoursSinceActive ?? 0;
 

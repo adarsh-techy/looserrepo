@@ -279,11 +279,15 @@ export async function deleteUser(req: AuthenticatedRequest, res: Response) {
 
 export async function getPartnerStatus(req: AuthenticatedRequest, res: Response) {
   const userId = req.user?.id!;
+  const currentRole = req.user?.role?.toUpperCase() || 'AD';
+  const targetRole = currentRole === 'AD' ? 'NS' : 'AD';
 
-  const partner = await prisma.user.findFirst({
+  let partner = await prisma.user.findFirst({
     where: {
+      role: targetRole,
       id: { not: userId },
     },
+    orderBy: { createdAt: 'desc' },
     select: {
       id: true,
       email: true,
@@ -296,6 +300,26 @@ export async function getPartnerStatus(req: AuthenticatedRequest, res: Response)
       createdAt: true,
     },
   });
+
+  if (!partner) {
+    partner = await prisma.user.findFirst({
+      where: {
+        id: { not: userId },
+      },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        avatar: true,
+        totpEnabled: true,
+        lastLogin: true,
+        lastCheckIn: true,
+        createdAt: true,
+      },
+    });
+  }
 
   if (!partner) return res.status(404).json({ error: 'Partner account not found' });
 
