@@ -11,7 +11,6 @@ import {
   Volume2,
   VolumeX,
   Clock,
-  Receipt,
   ArrowLeft,
 } from 'lucide-react';
 
@@ -86,15 +85,6 @@ export const Header: React.FC = () => {
             {currentTime.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
           </span>
         </div>
-
-        {/* Payments Quick Icon */}
-        <button
-          onClick={() => navigate('/payments')}
-          className="p-2 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0 group"
-          title="Payments & ITR Ledger"
-        >
-          <Receipt className="w-4 h-4 transition-transform group-hover:scale-110" />
-        </button>
 
         {/* Siren Sound Toggle & Test */}
         <div className="flex items-center bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl p-0.5 shrink-0">
