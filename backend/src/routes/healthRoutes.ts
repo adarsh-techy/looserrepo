@@ -7,6 +7,7 @@ import {
   createHealthRecord,
   updateHealthRecord,
   deleteHealthRecord,
+  getSingleHealthRecord,
 } from '../controllers/healthController';
 import { requireAuth } from '../middlewares/auth';
 
@@ -21,6 +22,7 @@ router.delete('/persons/:id', deleteHealthPerson);
 
 // Medical Records (Test Reports & Doctor Consultations)
 router.get('/records/:personId', getHealthRecords);
+router.get('/record/:id', getSingleHealthRecord);
 router.post('/records', createHealthRecord);
 router.patch('/records/:id', updateHealthRecord);
 router.delete('/records/:id', deleteHealthRecord);

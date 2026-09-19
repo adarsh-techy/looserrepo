@@ -505,3 +505,37 @@ export async function deleteHealthRecord(req: AuthenticatedRequest, res: Respons
     return res.status(500).json({ error: error.message || 'Failed to delete health record' });
   }
 }
+
+/**
+ * Get a single health record by ID with person details
+ */
+export async function getSingleHealthRecord(req: AuthenticatedRequest, res: Response) {
+  try {
+    const { id } = req.params;
+    const record = await prisma.healthRecord.findUnique({
+      where: { id },
+      include: {
+        person: true,
+      },
+    });
+
+    if (!record) {
+      return res.status(404).json({ error: 'Health record not found' });
+    }
+
+    let parsedAttachments = [];
+    try {
+      parsedAttachments = JSON.parse(record.attachments || '[]');
+    } catch (e) {
+      parsedAttachments = [];
+    }
+
+    return res.json({
+      ...record,
+      attachments: parsedAttachments,
+    });
+  } catch (error: any) {
+    console.error('[getSingleHealthRecord] Error:', error);
+    return res.status(500).json({ error: error.message || 'Failed to fetch record' });
+  }
+}

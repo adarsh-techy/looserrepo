@@ -356,10 +356,12 @@ export interface TrashItem {
 }
 
 export interface HealthAttachment {
+  id?: string;
   name: string;
-  size?: string | number;
+  size?: number | string;
   type?: string;
   dataUrl?: string;
+  uploadedAt?: string;
 }
 
 export interface HealthPerson {

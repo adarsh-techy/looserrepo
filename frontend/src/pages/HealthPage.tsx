@@ -3,7 +3,10 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store';
 import { showToast } from '../store/slices/uiSlice';
 import { api } from '../services/api';
-import { HealthPerson, HealthRecord } from '../types';
+import { HealthPerson, HealthRecord, HealthAttachment } from '../types';
+import { MedicalReportDetailPage } from '../components/Health/MedicalReportDetailPage';
+import { DoctorDetailPage } from '../components/Health/DoctorDetailPage';
+import { HealthAttachmentSection } from '../components/Health/HealthAttachmentSection';
 import {
   HeartPulse,
   User,
@@ -30,7 +33,9 @@ type HealthViewLevel =
   | 'DEPARTMENT' // Level 3: Department Selection
   | 'DEPT_SECTIONS' // Level 4: 2 Sections Hub (Test Reports vs Doctor Cards)
   | 'TEST_REPORTS' // Level 5A: Test Reports (X-Ray, Blood Test, etc.)
-  | 'DOCTOR_CARDS'; // Level 5B: Doctor Cards
+  | 'DOCTOR_CARDS' // Level 5B: Doctor Cards
+  | 'REPORT_DETAIL' // Level 6A: Medical Report Detail Page
+  | 'DOCTOR_DETAIL'; // Level 6B: Doctor Consultation Detail Page
 
 // Standard Organs List with Icons and Colors
 interface OrganConfig {
@@ -152,11 +157,14 @@ export const HealthPage: React.FC = () => {
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [selectedTestCategory, setSelectedTestCategory] = useState<string>('ALL');
 
-  // Modals States
+  // Modals & Detail States
+  const [selectedRecord, setSelectedRecord] = useState<HealthRecord | null>(null);
   const [isAddPersonModalOpen, setIsAddPersonModalOpen] = useState(false);
   const [isAddReportModalOpen, setIsAddReportModalOpen] = useState(false);
   const [isAddDoctorModalOpen, setIsAddDoctorModalOpen] = useState(false);
   const [inspectRecord, setInspectRecord] = useState<HealthRecord | null>(null);
+  const [newReportAttachments, setNewReportAttachments] = useState<HealthAttachment[]>([]);
+  const [newDoctorAttachments, setNewDoctorAttachments] = useState<HealthAttachment[]>([]);
 
   // New Person Form
   const [personName, setPersonName] = useState('');
@@ -249,7 +257,11 @@ export const HealthPage: React.FC = () => {
 
   // Handle Back Navigation
   const handleBack = () => {
-    if (viewLevel === 'TEST_REPORTS' || viewLevel === 'DOCTOR_CARDS') {
+    if (viewLevel === 'REPORT_DETAIL') {
+      setViewLevel('TEST_REPORTS');
+    } else if (viewLevel === 'DOCTOR_DETAIL') {
+      setViewLevel('DOCTOR_CARDS');
+    } else if (viewLevel === 'TEST_REPORTS' || viewLevel === 'DOCTOR_CARDS') {
       setViewLevel('DEPT_SECTIONS');
     } else if (viewLevel === 'DEPT_SECTIONS') {
       setViewLevel('DEPARTMENT');
@@ -258,6 +270,34 @@ export const HealthPage: React.FC = () => {
     } else if (viewLevel === 'ORGAN') {
       setViewLevel('PERSON');
       setSelectedPerson(null);
+    }
+  };
+
+  // Update Medical Record
+  const handleUpdateRecord = async (updated: HealthRecord) => {
+    try {
+      const res = await api.patch<HealthRecord>(`/health/records/${updated.id}`, updated);
+      setRecords((prev) => prev.map((r) => (r.id === updated.id ? res : r)));
+      setSelectedRecord(res);
+      dispatch(showToast({ message: 'Medical record updated successfully', type: 'success' }));
+    } catch (err: any) {
+      dispatch(showToast({ message: err.message || 'Failed to update record', type: 'error' }));
+    }
+  };
+
+  // Delete Medical Record
+  const handleDeleteRecord = async (recordId: string) => {
+    try {
+      await api.delete(`/health/records/${recordId}`);
+      setRecords((prev) => prev.filter((r) => r.id !== recordId));
+      if (selectedRecord?.id === recordId) {
+        setSelectedRecord(null);
+        if (viewLevel === 'REPORT_DETAIL') setViewLevel('TEST_REPORTS');
+        if (viewLevel === 'DOCTOR_DETAIL') setViewLevel('DOCTOR_CARDS');
+      }
+      dispatch(showToast({ message: 'Record deleted successfully', type: 'success' }));
+    } catch (err: any) {
+      dispatch(showToast({ message: err.message || 'Failed to delete record', type: 'error' }));
     }
   };
 
@@ -290,9 +330,12 @@ export const HealthPage: React.FC = () => {
     if (!selectedPerson || !selectedOrgan || !selectedDepartment || !testName.trim()) return;
 
     try {
-      const attachments = testAttachmentName.trim()
-        ? [{ name: testAttachmentName.trim(), size: '1.2 MB', type: 'application/pdf' }]
-        : [];
+      const attachments = [
+        ...newReportAttachments,
+        ...(testAttachmentName.trim()
+          ? [{ name: testAttachmentName.trim(), size: '1.2 MB', type: 'application/pdf' }]
+          : []),
+      ];
 
       const newRec = await api.post<HealthRecord>('/health/records', {
         personId: selectedPerson.id,
@@ -314,6 +357,7 @@ export const HealthPage: React.FC = () => {
       setLabName('');
       setResultsSummary('');
       setTestAttachmentName('');
+      setNewReportAttachments([]);
       dispatch(showToast({ message: 'Diagnostic test report saved', type: 'success' }));
     } catch (err: any) {
       dispatch(showToast({ message: err.message || 'Failed to save test report', type: 'error' }));
@@ -339,6 +383,7 @@ export const HealthPage: React.FC = () => {
         followUpDate: followUpDate || null,
         diagnosis: diagnosis.trim(),
         prescription: prescription.trim(),
+        attachments: newDoctorAttachments,
       });
 
       setRecords((prev) => [newRec, ...prev]);
@@ -349,6 +394,7 @@ export const HealthPage: React.FC = () => {
       setContactPhone('');
       setDiagnosis('');
       setPrescription('');
+      setNewDoctorAttachments([]);
       dispatch(showToast({ message: 'Doctor consultation & prescription saved', type: 'success' }));
     } catch (err: any) {
       dispatch(showToast({ message: err.message || 'Failed to save doctor details', type: 'error' }));
@@ -501,11 +547,43 @@ export const HealthPage: React.FC = () => {
           </>
         )}
 
+        {viewLevel === 'REPORT_DETAIL' && (
+          <>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <button
+              onClick={() => setViewLevel('TEST_REPORTS')}
+              className="font-semibold text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition shrink-0"
+            >
+              📋 Diagnostic Test Reports
+            </button>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <span className="font-bold text-emerald-600 dark:text-emerald-400 shrink-0 truncate max-w-xs">
+              📄 {selectedRecord?.testName || 'Report Detail'}
+            </span>
+          </>
+        )}
+
         {viewLevel === 'DOCTOR_CARDS' && (
           <>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <span className="font-bold text-blue-600 dark:text-blue-400 shrink-0">
               👨‍⚕️ Consulting Doctors & Prescriptions
+            </span>
+          </>
+        )}
+
+        {viewLevel === 'DOCTOR_DETAIL' && (
+          <>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <button
+              onClick={() => setViewLevel('DOCTOR_CARDS')}
+              className="font-semibold text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition shrink-0"
+            >
+              👨‍⚕️ Consulting Doctors & Prescriptions
+            </button>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <span className="font-bold text-blue-600 dark:text-blue-400 shrink-0 truncate max-w-xs">
+              🩺 {selectedRecord?.doctorName || 'Doctor Profile'}
             </span>
           </>
         )}
@@ -946,7 +1024,10 @@ export const HealthPage: React.FC = () => {
               {testReports.map((report) => (
                 <div
                   key={report.id}
-                  onClick={() => setInspectRecord(report)}
+                  onClick={() => {
+                    setSelectedRecord(report);
+                    setViewLevel('REPORT_DETAIL');
+                  }}
                   className="p-5 bg-white dark:bg-slate-900/90 rounded-3xl border border-slate-200 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-600 transition shadow-sm hover:shadow-md cursor-pointer space-y-3"
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -1069,7 +1150,10 @@ export const HealthPage: React.FC = () => {
               {doctorConsultations.map((doc) => (
                 <div
                   key={doc.id}
-                  onClick={() => setInspectRecord(doc)}
+                  onClick={() => {
+                    setSelectedRecord(doc);
+                    setViewLevel('DOCTOR_DETAIL');
+                  }}
                   className="p-5 bg-white dark:bg-slate-900/90 rounded-3xl border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600 transition shadow-sm hover:shadow-md cursor-pointer space-y-4"
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -1141,6 +1225,36 @@ export const HealthPage: React.FC = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* LEVEL 6A: MEDICAL REPORT DETAIL PAGE */}
+      {/* ========================================================================= */}
+      {viewLevel === 'REPORT_DETAIL' && selectedRecord && selectedPerson && selectedOrgan && selectedDepartment && (
+        <MedicalReportDetailPage
+          record={selectedRecord}
+          person={selectedPerson}
+          organName={selectedOrgan.name}
+          departmentName={selectedDepartment}
+          onBack={() => setViewLevel('TEST_REPORTS')}
+          onUpdateRecord={handleUpdateRecord}
+          onDeleteRecord={handleDeleteRecord}
+        />
+      )}
+
+      {/* ========================================================================= */}
+      {/* LEVEL 6B: DOCTOR CONSULTATION DETAIL PAGE */}
+      {/* ========================================================================= */}
+      {viewLevel === 'DOCTOR_DETAIL' && selectedRecord && selectedPerson && selectedOrgan && selectedDepartment && (
+        <DoctorDetailPage
+          record={selectedRecord}
+          person={selectedPerson}
+          organName={selectedOrgan.name}
+          departmentName={selectedDepartment}
+          onBack={() => setViewLevel('DOCTOR_CARDS')}
+          onUpdateRecord={handleUpdateRecord}
+          onDeleteRecord={handleDeleteRecord}
+        />
       )}
 
       {/* ========================================================================= */}
@@ -1395,16 +1509,12 @@ export const HealthPage: React.FC = () => {
                 />
               </div>
 
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Report Document Filename / Label
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Chest_XRay_Report.pdf or Scan_Image.jpg"
-                  value={testAttachmentName}
-                  onChange={(e) => setTestAttachmentName(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white outline-none"
+              <div className="pt-1">
+                <HealthAttachmentSection
+                  attachments={newReportAttachments}
+                  title="Upload Diagnostic Scans / Documents (Optional)"
+                  subtitle="Attach medical scans, X-rays, or laboratory PDF files right now."
+                  onUpdateAttachments={setNewReportAttachments}
                 />
               </div>
 
@@ -1559,6 +1669,15 @@ export const HealthPage: React.FC = () => {
                   value={prescription}
                   onChange={(e) => setPrescription(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs text-slate-900 dark:text-white outline-none"
+                />
+              </div>
+
+              <div className="pt-1">
+                <HealthAttachmentSection
+                  attachments={newDoctorAttachments}
+                  title="Attach Prescriptions / Slips (Optional)"
+                  subtitle="Attach doctor prescription slips, clinical notes or discharge summaries."
+                  onUpdateAttachments={setNewDoctorAttachments}
                 />
               </div>
 
