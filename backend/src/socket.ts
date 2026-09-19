@@ -9,7 +9,19 @@ const userSocketMap = new Map<string, Set<string>>(); // userId -> Set of socket
 export function initializeSocket(httpServer: HttpServer) {
   io = new SocketIOServer(httpServer, {
     cors: {
-      origin: config.corsOrigin,
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        const normalized = origin.replace(/\/$/, '');
+        if (config.nodeEnv === 'development' && (normalized.startsWith('http://localhost:') || normalized.startsWith('http://127.0.0.1:'))) {
+          return callback(null, true);
+        }
+        const isAllowed = config.corsOrigin.some((allowed) => {
+          const normAllowed = allowed.trim().replace(/\/$/, '');
+          return normAllowed === '*' || normAllowed === normalized;
+        });
+        if (isAllowed) return callback(null, true);
+        return callback(new Error(`Socket CORS: Origin ${origin} not allowed`));
+      },
       credentials: true,
     },
   });

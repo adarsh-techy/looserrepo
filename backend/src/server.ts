@@ -18,11 +18,25 @@ app.use(helmet({
 }));
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, postman) or matching list
-    if (!origin || config.corsOrigin.includes(origin) || origin.startsWith('http://localhost:')) {
+    // Allow requests with no origin (mobile apps, curl, postman, server-to-server)
+    if (!origin) {
       return callback(null, true);
     }
-    return callback(null, true);
+    const normalizedOrigin = origin.replace(/\/$/, '');
+    // In development mode, allow any local port automatically
+    if (config.nodeEnv === 'development' && (normalizedOrigin.startsWith('http://localhost:') || normalizedOrigin.startsWith('http://127.0.0.1:'))) {
+      return callback(null, true);
+    }
+    // Check against configured allowed origins
+    const isAllowed = config.corsOrigin.some((allowed) => {
+      const normalizedAllowed = allowed.trim().replace(/\/$/, '');
+      return normalizedAllowed === '*' || normalizedAllowed === normalizedOrigin;
+    });
+
+    if (isAllowed) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS policy violation: Origin ${origin} is not allowed`));
   },
   credentials: true,
 }));
