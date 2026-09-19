@@ -89,6 +89,13 @@ export const APP_PAGES: AppPageDef[] = [
     description: 'AES-256 encrypted credential password store',
   },
   {
+    key: 'documents',
+    path: '/documents',
+    label: 'Documents & Cards',
+    category: 'Security & Vault',
+    description: 'Bank accounts, ATM/Debit cards, Government IDs (License, Aadhaar, PAN, Passport, Voter ID) & Health Insurance',
+  },
+  {
     key: 'secret-notes',
     path: '/secret-notes',
     label: 'Secret Notes',

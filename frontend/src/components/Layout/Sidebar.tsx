@@ -24,6 +24,7 @@ import {
   Wallet,
   Trash2,
   HeartPulse,
+  CreditCard,
 } from 'lucide-react';
 
 
@@ -82,6 +83,7 @@ export const Sidebar: React.FC = () => {
       title: 'Security & Vault',
       items: [
         { to: '/passwords', label: 'Passwords', icon: KeyRound },
+        { to: '/documents', label: 'Documents & Cards', icon: CreditCard },
         { to: '/secret-notes', label: 'Secret Notes', icon: ShieldAlert, isSecretNotes: true },
         { to: '/my-secret-notes', label: 'My Secret Notes', icon: FileKey },
       ],

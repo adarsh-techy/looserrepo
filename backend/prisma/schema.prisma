@@ -43,6 +43,7 @@ model User {
   moneyRecords    MoneyRecord[]    @relation("UserMoneyRecords")
   trashItems      TrashItem[]      @relation("UserTrashItems")
   healthPersons   HealthPerson[]   @relation("UserHealthPersons")
+  documentItems   DocumentItem[]   @relation("UserDocumentItems")
 }
 
 model DayToDayNote {
@@ -377,4 +378,57 @@ model HealthRecord {
   @@index([organName])
   @@index([departmentName])
   @@index([recordType])
+}
+
+model DocumentItem {
+  id                    String   @id @default(uuid())
+  category              String   // BANK, ATM, DOCUMENTS, INSURANCE
+  subType               String?  // For DOCUMENTS: DRIVING_LICENSE, AADHAAR, PAN, PASSPORT, VOTER_ID, CUSTOM. For BANK: SAVINGS, CURRENT, SALARY. For ATM: DEBIT, CREDIT. For INSURANCE: HEALTH, LIFE, FLOATER
+  title                 String   // E.g. "HDFC Salary Account", "ICICI Sapphiro Visa", "Adarsh Aadhaar Card", "Star Health Family Optima"
+  holderName            String?  // Name of account / card / document holder
+  
+  // Bank Account Fields
+  accountNumber         String?
+  ifscCode              String?
+  bankName              String?
+  branchLocation        String?
+  upiId                 String?
+
+  // ATM / Card Fields
+  cardNumber            String?
+  expiryDate            String?  // MM/YY
+  cvv                   String?
+  cardNetwork           String?  // VISA, MASTERCARD, RUPAY, AMEX, OTHER
+  cardType              String?  // DEBIT, CREDIT, FOREX
+  pinHint               String?
+
+  // Identity Document Fields
+  docNumber             String?  // Aadhaar / PAN / DL / Passport / Voter ID / Custom number
+  issueDate             String?
+  validUntil            String?  // Expiry date
+  issuingAuth           String?  // UIDAI, Income Tax Dept, RTO, Govt of India, etc.
+  addressLocation       String?  // Registered address / State
+
+  // Health Insurance Fields
+  policyNumber          String?
+  insurerName           String?
+  policyType            String?  // Comprehensive Health, Family Floater, Critical Illness, Top-Up
+  sumInsured            Float?
+  tpaName               String?
+  helplinePhone         String?
+  cashlessHospitalNotes String?
+
+  // Common
+  notes                 String?
+  customFields          String   @default("{}") // JSON string for any arbitrary custom fields
+  attachments           String   @default("[]") // JSON array of attachments [{ name, size, type, dataUrl }]
+  isShared              Boolean  @default(true)
+  ownerId               String
+  owner                 User     @relation("UserDocumentItems", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([category])
+  @@index([subType])
+  @@index([ownerId])
 }

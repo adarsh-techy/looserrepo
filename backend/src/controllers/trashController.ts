@@ -50,6 +50,7 @@ export async function getTrashItems(req: AuthenticatedRequest, res: Response) {
       VAULT: 0,
       SHARED_NOTE: 0,
       SECRET_NOTE: 0,
+      DOCUMENT: 0,
     };
 
     allCounts.forEach((c) => {
@@ -302,6 +303,24 @@ export async function restoreTrashItem(req: AuthenticatedRequest, res: Response)
             designatedRecipientId,
             id: trashItem.originalId,
             ownerLastCheckInAt: data.ownerLastCheckInAt ? new Date(data.ownerLastCheckInAt) : new Date(),
+            createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+            updatedAt: new Date(),
+          },
+        });
+        break;
+      }
+
+      case 'DOCUMENT': {
+        const { id: _, owner, ...data } = rawData;
+        let ownerId = data.ownerId;
+        const ownerExists = await prisma.user.findUnique({ where: { id: ownerId } });
+        if (!ownerExists) ownerId = userId;
+
+        restoredRecord = await prisma.documentItem.create({
+          data: {
+            ...data,
+            ownerId,
+            id: trashItem.originalId,
             createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
             updatedAt: new Date(),
           },

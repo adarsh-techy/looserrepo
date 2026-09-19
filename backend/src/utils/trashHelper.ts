@@ -2,7 +2,7 @@ import { prisma } from '../prisma/client';
 
 export interface MoveToTrashParams {
   originalId: string;
-  itemType: 'WORK' | 'MONEY' | 'PAYMENT' | 'BUSINESS' | 'FUTURE_PLAN' | 'DAY_TO_DAY' | 'VAULT' | 'SHARED_NOTE' | 'SECRET_NOTE';
+  itemType: 'WORK' | 'MONEY' | 'PAYMENT' | 'BUSINESS' | 'FUTURE_PLAN' | 'DAY_TO_DAY' | 'VAULT' | 'SHARED_NOTE' | 'SECRET_NOTE' | 'DOCUMENT';
   title: string;
   subtitle?: string | null;
   deleteReason?: string | null;

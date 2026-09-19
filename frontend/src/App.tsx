@@ -24,6 +24,7 @@ import { WorksPage } from './pages/WorksPage';
 import { WorkFormPage } from './pages/WorkFormPage';
 import { TrashPage } from './pages/TrashPage';
 import { HealthPage } from './pages/HealthPage';
+import { DocumentsPage } from './pages/DocumentsPage';
 
 
 import { hasPageAccess, getDefaultAccessibleRoute } from './utils/permissions';
@@ -94,6 +95,7 @@ export const App: React.FC = () => {
           <Route path="future-plans/:id" element={<PermissionRoute path="/future-plans"><FuturePlanDetailPage /></PermissionRoute>} />
           <Route path="day-to-day" element={<PermissionRoute path="/day-to-day"><DayToDayPage /></PermissionRoute>} />
           <Route path="passwords" element={<PermissionRoute path="/passwords"><PasswordsPage /></PermissionRoute>} />
+          <Route path="documents" element={<PermissionRoute path="/documents"><DocumentsPage /></PermissionRoute>} />
           <Route path="secret-notes" element={<PermissionRoute path="/secret-notes"><SecretNotesPage /></PermissionRoute>} />
           <Route path="my-secret-notes" element={<PermissionRoute path="/my-secret-notes"><MySecretNotesPage /></PermissionRoute>} />
           <Route path="audit-log" element={<PermissionRoute path="/audit-log"><AuditLogPage /></PermissionRoute>} />
