@@ -548,61 +548,76 @@ export const DocumentsPage: React.FC = () => {
       )}
 
       {/* ----------------------------------------------------------------- */}
-      {/* CARDS LISTING GRID                                                */}
+      {/* CARDS LISTING GRID (Only shown when a category card is opened or searching) */}
       {/* ----------------------------------------------------------------- */}
-      <div className="space-y-4">
-        {activeCategory !== 'ALL' && (
+      {(activeCategory !== 'ALL' || searchQuery.trim() !== '') && (
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              {activeCategory === 'BANK' && 'Bank Accounts List'}
-              {activeCategory === 'ATM' && 'ATM, Debit & Credit Cards List'}
+              {activeCategory === 'BANK' && 'Bank Accounts'}
+              {activeCategory === 'ATM' && 'ATM, Debit & Credit Cards'}
               {activeCategory === 'DOCUMENTS' && 'Identity & Government Documents'}
               {activeCategory === 'INSURANCE' && 'Health & Life Insurance Policies'}
+              {activeCategory === 'ALL' && searchQuery.trim() && `Search Results for "${searchQuery}"`}
             </h2>
-            <span className="text-xs text-slate-400 font-medium">
-              Showing {filteredItems.length} {filteredItems.length === 1 ? 'card' : 'cards'}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-slate-400 font-medium">
+                {filteredItems.length} {filteredItems.length === 1 ? 'card' : 'cards'}
+              </span>
+              {activeCategory !== 'ALL' && (
+                <button
+                  onClick={() => {
+                    setActiveCategory('ALL');
+                    setActiveDocSubType('ALL');
+                  }}
+                  className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back to Categories</span>
+                </button>
+              )}
+            </div>
           </div>
-        )}
 
-        {loading ? (
-          <div className="p-12 text-center text-slate-400 flex flex-col items-center justify-center gap-3">
-            <RefreshCw className="w-6 h-6 animate-spin text-blue-500" />
-            <span className="text-xs font-semibold">Loading your secure vault cards...</span>
-          </div>
-        ) : filteredItems.length === 0 ? (
-          <div className="p-12 text-center rounded-3xl bg-slate-50 dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-800 flex flex-col items-center justify-center gap-3">
-            <ShieldCheck className="w-10 h-10 text-slate-400" />
-            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
-              {searchQuery ? 'No matching cards found' : 'No cards saved in this category yet'}
-            </h3>
-            <p className="text-xs text-slate-500 max-w-sm">
-              {searchQuery
-                ? `No cards matched "${searchQuery}". Try a different search term.`
-                : 'Click the button below to add your first secure card or document.'}
-            </p>
-            <button
-              onClick={() => handleOpenAddModal(activeCategory === 'ALL' ? 'BANK' : activeCategory)}
-              className="mt-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              <span>+ Add Card Now</span>
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5">
-            {filteredItems.map((item) => (
-              <RealisticCardView
-                key={item.id}
-                item={item}
-                onEdit={handleOpenEditModal}
-                onDelete={handleDeleteItem}
-                onViewAttachment={handleViewAttachment}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+          {loading ? (
+            <div className="p-12 text-center text-slate-400 flex flex-col items-center justify-center gap-3">
+              <RefreshCw className="w-6 h-6 animate-spin text-blue-500" />
+              <span className="text-xs font-semibold">Loading your secure vault cards...</span>
+            </div>
+          ) : filteredItems.length === 0 ? (
+            <div className="p-12 text-center rounded-3xl bg-slate-50 dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-800 flex flex-col items-center justify-center gap-3">
+              <ShieldCheck className="w-10 h-10 text-slate-400" />
+              <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
+                {searchQuery ? 'No matching cards found' : 'No cards saved in this category yet'}
+              </h3>
+              <p className="text-xs text-slate-500 max-w-sm">
+                {searchQuery
+                  ? `No cards matched "${searchQuery}". Try a different search term.`
+                  : 'Click the button below to add your first secure card or document.'}
+              </p>
+              <button
+                onClick={() => handleOpenAddModal(activeCategory === 'ALL' ? 'BANK' : activeCategory)}
+                className="mt-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ Add Card Now</span>
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5">
+              {filteredItems.map((item) => (
+                <RealisticCardView
+                  key={item.id}
+                  item={item}
+                  onEdit={handleOpenEditModal}
+                  onDelete={handleDeleteItem}
+                  onViewAttachment={handleViewAttachment}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ----------------------------------------------------------------- */}
       {/* ADD / EDIT MODAL                                                  */}
