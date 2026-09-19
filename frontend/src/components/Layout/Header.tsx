@@ -42,14 +42,14 @@ export const Header: React.FC = () => {
     <header className="shrink-0 h-14 sm:h-16 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-3 sticky top-0 z-20 transition-colors duration-200">
       {/* Left side: Back Button + Hamburger on mobile + Mini Brand */}
       <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink">
-        {/* Universal Back Button across all pages */}
+        {/* Universal Back Button across all pages (Desktop/Tablet only) */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 transition shrink-0 active:scale-95 border border-slate-200 dark:border-slate-700 shadow-xs cursor-pointer"
+          className="hidden md:flex items-center gap-1 px-2.5 py-1.5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 transition shrink-0 active:scale-95 border border-slate-200 dark:border-slate-700 shadow-xs cursor-pointer"
           title="Go back to previous page"
         >
           <ArrowLeft className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-          <span className="hidden sm:inline text-xs font-bold">Back</span>
+          <span className="text-xs font-bold">Back</span>
         </button>
 
         {/* Mobile Hamburger Toggle */}
