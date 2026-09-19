@@ -507,7 +507,7 @@ export const HealthPage: React.FC = () => {
         {viewLevel === 'PERSON' && (
           <button
             onClick={() => setIsAddPersonModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-rose-600/30 flex items-center gap-2 self-start sm:self-auto cursor-pointer active:scale-95"
+            className="w-full sm:w-auto justify-center px-4 py-2 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-rose-600/30 flex items-center gap-2 cursor-pointer active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>Add Family Member</span>
@@ -1080,21 +1080,21 @@ export const HealthPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2.5">
-              <div className="relative">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
+              <div className="relative w-full sm:w-48">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Search reports..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white outline-none w-44"
+                  className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white outline-none"
                 />
               </div>
 
               <button
                 onClick={() => setIsAddReportModalOpen(true)}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-md shadow-emerald-600/30 flex items-center gap-1.5 cursor-pointer"
+                className="w-full sm:w-auto justify-center px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-md shadow-emerald-600/30 flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Test Report</span>
@@ -1234,21 +1234,21 @@ export const HealthPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2.5">
-              <div className="relative">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
+              <div className="relative w-full sm:w-48">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Search doctors..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white outline-none w-44"
+                  className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white outline-none"
                 />
               </div>
 
               <button
                 onClick={() => setIsAddDoctorModalOpen(true)}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer"
+                className="w-full sm:w-auto justify-center px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Doctor Consultation</span>

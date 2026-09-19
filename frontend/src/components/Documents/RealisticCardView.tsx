@@ -76,7 +76,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
     const isCvvRevealed = !!revealedKeys[`cvv_${item.id}`];
 
     return (
-      <div className="relative group rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] overflow-hidden border border-white/10 shadow-xl bg-gradient-to-br min-h-[240px] flex flex-col justify-between"
+      <div className="relative group rounded-3xl p-4 sm:p-6 transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] overflow-hidden border border-white/10 shadow-xl bg-gradient-to-br min-h-[240px] flex flex-col justify-between"
         style={{
           background: isCredit
             ? 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #020617 100%)'
@@ -147,7 +147,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
         </div>
 
         {/* 16-Digit Card Number Display */}
-        <div className="relative z-10 mb-4 font-mono font-bold tracking-widest text-lg sm:text-xl text-white drop-shadow-md">
+        <div className="relative z-10 mb-4 font-mono font-bold tracking-wider sm:tracking-widest text-base sm:text-xl text-white drop-shadow-md">
           {formatCardNumber(item.cardNumber, isRevealed)}
         </div>
 
@@ -193,7 +193,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
         </div>
 
         {/* Bottom Actions Bar */}
-        <div className="relative z-10 mt-3 pt-2.5 flex items-center justify-between border-t border-white/5 text-[11px] text-slate-300">
+        <div className="relative z-10 mt-3 pt-2.5 flex flex-wrap items-center justify-between gap-2 border-t border-white/5 text-[11px] text-slate-300">
           {item.pinHint ? (
             <div className="flex items-center gap-1 text-[10px] text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded-full border border-cyan-800/40">
               <Lock className="w-3 h-3" />
@@ -344,7 +344,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
         <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:16px_16px]" />
 
         {/* 1. Official Bank Institutional Header Bar */}
-        <div className={`relative z-10 px-5 py-3 ${bankConfig.headerBg} text-white flex items-center justify-between border-b ${bankConfig.headerBorder} shadow-md`}>
+        <div className={`relative z-10 px-4 sm:px-5 py-3 ${bankConfig.headerBg} text-white flex items-center justify-between border-b ${bankConfig.headerBorder} shadow-md`}>
           <div className="flex items-center gap-2.5 min-w-0">
             {bankConfig.emblemSvg}
             <div className="leading-tight min-w-0">
@@ -365,14 +365,14 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
         </div>
 
         {/* 2. Primary Account Number High-Security Display */}
-        <div className="relative z-10 px-5 pt-4 pb-2">
+        <div className="relative z-10 px-4 sm:px-5 pt-3.5 sm:pt-4 pb-2">
           <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">
                 <Lock className="w-3 h-3 text-emerald-500" />
                 <span>Account Number / खाता संख्या</span>
               </div>
-              <div className="text-xl sm:text-2xl font-black font-mono tracking-wider text-slate-900 dark:text-white mt-0.5">
+              <div className="text-lg sm:text-2xl font-black font-mono tracking-wide sm:tracking-wider text-slate-900 dark:text-white mt-0.5">
                 {isRevealed
                   ? item.accountNumber || '—'
                   : item.accountNumber
@@ -406,7 +406,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
         </div>
 
         {/* 3. Passbook Routing Details (IFSC, Branch, CIF Holder, UPI) */}
-        <div className="relative z-10 px-5 py-2 space-y-2 text-xs">
+        <div className="relative z-10 px-4 sm:px-5 py-2 space-y-2 text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {/* IFSC Code Box */}
             <div className="p-2.5 rounded-xl bg-white dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
@@ -472,7 +472,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
         </div>
 
         {/* 4. Bottom Passbook Ledger Seal & Actions Bar */}
-        <div className="relative z-10 px-5 py-2.5 bg-slate-100 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+        <div className="relative z-10 px-4 sm:px-5 py-2.5 bg-slate-100 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
           {/* Simulated Bank Authorized Seal Stamp */}
           <div className="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400 font-mono font-semibold">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -526,7 +526,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]" />
 
           {/* Top Header Bar: Ashoka Emblem & UIDAI Logo */}
-          <div className="relative z-10 px-5 pt-4 pb-2 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between bg-white/70 dark:bg-slate-950/70 backdrop-blur-xs">
+          <div className="relative z-10 px-4 sm:px-5 pt-3.5 pb-2 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between bg-white/70 dark:bg-slate-950/70 backdrop-blur-xs">
             {/* Left: Emblem of India & Govt of India */}
             <div className="flex items-center gap-2.5">
               {/* Ashoka Lion Silhouette */}
@@ -558,7 +558,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           </div>
 
           {/* Middle Body: Photo Frame, Personal Details & QR Box */}
-          <div className="relative z-10 px-5 py-4 flex flex-col sm:flex-row items-start justify-between gap-4">
+          <div className="relative z-10 px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-start justify-between gap-4">
             {/* Left: Photo Frame with Hologram Watermark */}
             <div className="relative shrink-0 flex flex-col items-center">
               <div className="w-20 h-24 rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 shadow-inner flex flex-col items-center justify-center overflow-hidden p-1">
@@ -615,12 +615,12 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           </div>
 
           {/* Aadhaar 12-Digit Number Section */}
-          <div className="relative z-10 px-5 py-2.5 bg-slate-50/80 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div className="relative z-10 px-4 sm:px-5 py-2.5 bg-slate-50/80 dark:bg-slate-950/60 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div>
               <div className="text-[9px] uppercase font-bold tracking-widest text-slate-400">
                 12-Digit Aadhaar Number
               </div>
-              <div className="text-lg sm:text-2xl font-black font-mono tracking-widest text-red-700 dark:text-red-400">
+              <div className="text-base sm:text-2xl font-black font-mono tracking-wider sm:tracking-widest text-red-700 dark:text-red-400">
                 {formatAadhaar(item.docNumber, isRevealed)}
               </div>
             </div>
@@ -649,7 +649,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           </div>
 
           {/* Bottom Official Ribbon: "मेरा आधार, मेरी पहचान" */}
-          <div className="relative z-10 px-5 py-2 bg-gradient-to-r from-red-600 via-red-700 to-amber-700 text-white flex items-center justify-between text-xs">
+          <div className="relative z-10 px-4 sm:px-5 py-2 bg-gradient-to-r from-red-600 via-red-700 to-amber-700 text-white flex flex-wrap items-center justify-between gap-2 text-xs">
             <span className="font-extrabold tracking-wider text-[11px] drop-shadow-xs">
               मेरा आधार, मेरी पहचान
             </span>
@@ -691,7 +691,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
       return (
         <div className="relative group rounded-3xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] overflow-hidden border border-sky-300 dark:border-blue-900/60 shadow-xl bg-gradient-to-br from-sky-50 via-blue-50/50 to-indigo-50 dark:from-slate-900 dark:via-blue-950/40 dark:to-slate-900 flex flex-col justify-between min-h-[300px]">
           {/* Authentic Income Tax Deep Blue Header */}
-          <div className="relative z-10 px-5 py-3 bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white flex items-center justify-between border-b border-blue-950 shadow-md">
+          <div className="relative z-10 px-4 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white flex items-center justify-between border-b border-blue-950 shadow-md">
             <div className="leading-tight">
               <div className="text-[11px] font-black tracking-tight text-white">आयकर विभाग</div>
               <div className="text-[9px] font-extrabold text-sky-200 tracking-wider">INCOME TAX DEPARTMENT</div>
@@ -713,14 +713,14 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           </div>
 
           {/* Subheader: Permanent Account Number Card */}
-          <div className="relative z-10 px-5 py-1 text-center bg-blue-100/70 dark:bg-blue-950/60 border-b border-blue-200 dark:border-blue-900/40">
+          <div className="relative z-10 px-3 sm:px-5 py-1 text-center bg-blue-100/70 dark:bg-blue-950/60 border-b border-blue-200 dark:border-blue-900/40">
             <span className="text-[9px] font-extrabold text-blue-900 dark:text-blue-300 uppercase tracking-wider">
               स्थायी लेखा संख्या कार्ड / Permanent Account Number Card
             </span>
           </div>
 
           {/* Middle Body: Photo, Hologram Seal, PAN Details */}
-          <div className="relative z-10 px-5 py-4 flex flex-col sm:flex-row items-start justify-between gap-4">
+          <div className="relative z-10 px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-start justify-between gap-4">
             {/* Left: Photo Frame + Holographic Seal */}
             <div className="relative shrink-0 flex flex-col items-center gap-2">
               <div className="w-20 h-24 rounded-xl border-2 border-sky-300 dark:border-sky-800 bg-white dark:bg-slate-950 shadow-sm flex flex-col items-center justify-center p-1">
@@ -743,7 +743,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
                 <div className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">
                   Permanent Account Number (PAN)
                 </div>
-                <div className="text-xl sm:text-2xl font-black font-mono text-blue-950 dark:text-sky-300 tracking-widest">
+                <div className="text-lg sm:text-2xl font-black font-mono text-blue-950 dark:text-sky-300 tracking-wider sm:tracking-widest">
                   {item.docNumber
                     ? isRevealed
                       ? item.docNumber
@@ -787,7 +787,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           </div>
 
           {/* Bottom Actions Bar */}
-          <div className="relative z-10 px-5 py-2.5 bg-blue-900/10 dark:bg-slate-950/80 border-t border-sky-200 dark:border-blue-950 flex items-center justify-between text-xs">
+          <div className="relative z-10 px-4 sm:px-5 py-2.5 bg-blue-900/10 dark:bg-slate-950/80 border-t border-sky-200 dark:border-blue-950 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               <button
                 onClick={(e) => toggleReveal(`doc_${item.id}`, e)}
@@ -847,7 +847,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
       return (
         <div className="relative group rounded-3xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] overflow-hidden border border-emerald-300 dark:border-emerald-900/60 shadow-xl bg-gradient-to-br from-emerald-50 via-amber-50/40 to-teal-50 dark:from-slate-900 dark:via-emerald-950/30 dark:to-slate-900 flex flex-col justify-between min-h-[300px]">
           {/* Top Banner: Indian Union Driving Licence */}
-          <div className="relative z-10 px-5 py-3 bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white flex items-center justify-between border-b border-emerald-950 shadow-md">
+          <div className="relative z-10 px-4 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white flex items-center justify-between border-b border-emerald-950 shadow-md">
             <div className="leading-tight">
               <div className="text-[11px] font-black tracking-wider text-white uppercase">INDIAN UNION DRIVING LICENCE</div>
               <div className="text-[9px] font-bold text-emerald-200">KERALA STATE / MOTOR VEHICLES DEPARTMENT</div>
@@ -859,7 +859,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           </div>
 
           {/* Middle Body: Smart Chip, Photo, DL Details */}
-          <div className="relative z-10 px-5 py-4 flex flex-col sm:flex-row items-start justify-between gap-4">
+          <div className="relative z-10 px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-start justify-between gap-4">
             {/* Left: Photo Frame & Gold Smart Card Chip */}
             <div className="relative shrink-0 flex flex-col items-center gap-2">
               {/* Metallic Gold EMV Chip */}
@@ -928,7 +928,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           </div>
 
           {/* Bottom Actions Bar */}
-          <div className="relative z-10 px-5 py-2.5 bg-emerald-900/10 dark:bg-slate-950/80 border-t border-emerald-200 dark:border-emerald-950 flex items-center justify-between text-xs">
+          <div className="relative z-10 px-4 sm:px-5 py-2.5 bg-emerald-900/10 dark:bg-slate-950/80 border-t border-emerald-200 dark:border-emerald-950 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               {item.docNumber && (
                 <button
@@ -979,7 +979,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
       return (
         <div className="relative group rounded-3xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] overflow-hidden border border-amber-500/30 shadow-xl bg-gradient-to-b from-[#0b1b36] via-[#09152b] to-[#040a14] text-white flex flex-col justify-between min-h-[320px]">
           {/* Passport Header in Gold Foil */}
-          <div className="relative z-10 px-5 py-3 border-b border-amber-500/20 flex items-center justify-between bg-black/40">
+          <div className="relative z-10 px-4 sm:px-5 py-2.5 sm:py-3 border-b border-amber-500/20 flex items-center justify-between bg-black/40">
             <div className="flex items-center gap-3">
               <div className="w-7 h-8 text-amber-400">
                 <svg viewBox="0 0 24 28" fill="currentColor" className="w-full h-full">
@@ -998,7 +998,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           </div>
 
           {/* Data Fields & Photo Frame */}
-          <div className="relative z-10 px-5 py-3 flex flex-col sm:flex-row items-start justify-between gap-4 text-xs">
+          <div className="relative z-10 px-4 sm:px-5 py-3 flex flex-col sm:flex-row items-start justify-between gap-4 text-xs">
             {/* Left: Photo Frame */}
             <div className="w-20 h-24 rounded-xl border border-amber-400/40 bg-black/60 shadow-inner flex flex-col items-center justify-center p-1 shrink-0">
               <div className="w-10 h-10 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center font-black text-sm">
@@ -1054,13 +1054,13 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           </div>
 
           {/* Machine Readable Zone (MRZ Lines) */}
-          <div className="relative z-10 px-5 py-2 bg-black/60 border-t border-amber-500/20 font-mono text-[9px] sm:text-[10px] tracking-widest text-amber-300/80 leading-tight select-all">
+          <div className="relative z-10 px-4 sm:px-5 py-2 bg-black/60 border-t border-amber-500/20 font-mono text-[8px] sm:text-[10px] tracking-widest text-amber-300/80 leading-tight select-all overflow-x-auto whitespace-nowrap">
             <div>P&lt;IND{item.holderName ? item.holderName.replace(/\s+/g, '<').toUpperCase() : 'ADARSH<S'}&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
             <div>{item.docNumber || 'Z5819204'}&lt;8IND9805124M3103098&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;02</div>
           </div>
 
           {/* Bottom Actions Bar */}
-          <div className="relative z-10 px-5 py-2 bg-black/40 border-t border-white/5 flex items-center justify-between text-xs">
+          <div className="relative z-10 px-4 sm:px-5 py-2 bg-black/40 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               {item.docNumber && (
                 <button
@@ -1114,7 +1114,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           <div className="h-1.5 w-full bg-gradient-to-r from-orange-500 via-white to-emerald-500" />
 
           {/* Header Bar */}
-          <div className="relative z-10 px-5 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-950">
+          <div className="relative z-10 px-4 sm:px-5 py-2.5 sm:py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-950">
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-8 text-slate-800 dark:text-amber-400">
                 <svg viewBox="0 0 24 28" fill="currentColor" className="w-full h-full">
@@ -1137,7 +1137,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           </div>
 
           {/* Details & Photo */}
-          <div className="relative z-10 px-5 py-4 flex flex-col sm:flex-row items-start justify-between gap-4 text-xs">
+          <div className="relative z-10 px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-start justify-between gap-4 text-xs">
             {/* Left Photo Frame with Hologram */}
             <div className="relative shrink-0 flex flex-col items-center">
               <div className="w-20 h-24 rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 shadow-sm flex flex-col items-center justify-center p-1">
@@ -1194,7 +1194,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           </div>
 
           {/* Bottom Actions Bar */}
-          <div className="relative z-10 px-5 py-2.5 bg-slate-100 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+          <div className="relative z-10 px-4 sm:px-5 py-2.5 bg-slate-100 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               {item.docNumber && (
                 <button
@@ -1244,7 +1244,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
     return (
       <div className="relative group rounded-3xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] overflow-hidden border border-slate-300 dark:border-slate-700 shadow-xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white flex flex-col justify-between min-h-[300px]">
         {/* Header Bar */}
-        <div className="relative z-10 px-5 py-3 border-b border-white/10 flex items-center justify-between bg-black/40">
+        <div className="relative z-10 px-4 sm:px-5 py-2.5 sm:py-3 border-b border-white/10 flex items-center justify-between bg-black/40">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-blue-500/20 text-cyan-300 border border-cyan-500/30">
               <ShieldCheck className="w-5 h-5" />
@@ -1263,7 +1263,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
         </div>
 
         {/* Card Body */}
-        <div className="relative z-10 px-5 py-4 flex flex-col sm:flex-row items-start justify-between gap-4 text-xs">
+        <div className="relative z-10 px-4 sm:px-5 py-3 sm:py-4 flex flex-col sm:flex-row items-start justify-between gap-4 text-xs">
           {/* Left: Smart Chip */}
           <div className="shrink-0 flex flex-col items-center gap-2">
             <div className="w-11 h-8 rounded-md bg-gradient-to-tr from-amber-400 via-amber-300 to-yellow-200 border border-amber-500/60 shadow-inner flex flex-col justify-around p-1">
@@ -1318,7 +1318,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
         </div>
 
         {/* Bottom Actions Bar */}
-        <div className="relative z-10 px-5 py-2.5 bg-black/40 border-t border-white/10 flex items-center justify-between text-xs">
+        <div className="relative z-10 px-4 sm:px-5 py-2.5 bg-black/40 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2">
             {item.docNumber && (
               <button
@@ -1366,7 +1366,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
   /* 4. HEALTH INSURANCE CARD DESIGN                              */
   /* ------------------------------------------------------------- */
   return (
-    <div className="rounded-3xl p-5 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+    <div className="rounded-3xl p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
       <div>
         {/* Header */}
         <div className="flex items-start justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
@@ -1406,7 +1406,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
         </div>
 
         {/* Policy Number Box */}
-        <div className="mt-4 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="mt-4 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
               Policy Number
@@ -1419,7 +1419,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
           {item.policyNumber && (
             <button
               onClick={(e) => handleCopy(item.policyNumber!, `pol_${item.id}`, e)}
-              className="p-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-medium text-xs flex items-center gap-1 shadow-sm transition"
+              className="p-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-medium text-xs flex items-center gap-1 shadow-sm transition self-start sm:self-auto"
               title="Copy Policy Number"
             >
               {copiedKey === `pol_${item.id}` ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -1447,7 +1447,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
 
         {/* TPA & Helpline Call */}
         {item.helplinePhone && (
-          <div className="mt-2.5 p-2.5 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-800/40 flex items-center justify-between text-xs">
+          <div className="mt-2.5 p-2.5 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-800/40 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               <Phone className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
               <span className="text-[11px] text-slate-500 dark:text-slate-400">Cashless Helpline:</span>
@@ -1460,7 +1460,7 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
         <span className="text-[11px] truncate max-w-[200px]" title={item.tpaName || ''}>
           TPA: {item.tpaName || 'In-House TPA'}
         </span>

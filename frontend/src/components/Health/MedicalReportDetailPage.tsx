@@ -125,11 +125,11 @@ export const MedicalReportDetailPage: React.FC<MedicalReportDetailPageProps> = (
     <div className="space-y-6 animate-fade-in pb-12">
       {/* Top Navigation Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900/90 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             type="button"
             onClick={onBack}
-            className="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-2xl text-xs font-bold flex items-center gap-2 transition cursor-pointer active:scale-95"
+            className="w-full sm:w-auto justify-center px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-2xl text-xs font-bold flex items-center gap-2 transition cursor-pointer active:scale-95"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Test Reports</span>
@@ -145,7 +145,7 @@ export const MedicalReportDetailPage: React.FC<MedicalReportDetailPageProps> = (
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 self-end sm:self-auto">
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
           {isEditing ? (
             <button
               type="button"

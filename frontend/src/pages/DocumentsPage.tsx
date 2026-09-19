@@ -266,10 +266,10 @@ export const DocumentsPage: React.FC = () => {
         </div>
 
         {/* Header Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
           <button
             onClick={() => handleOpenAddModal(activeCategory === 'ALL' ? 'BANK' : activeCategory)}
-            className="px-4 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-lg shadow-blue-500/25 transition flex items-center gap-2"
+            className="w-full sm:w-auto justify-center px-4 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-lg shadow-blue-500/25 transition flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             <span>
@@ -303,11 +303,11 @@ export const DocumentsPage: React.FC = () => {
       )}
 
       {/* Search & Navigation Bar */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         {isDrilledDown ? (
           <button
             onClick={handleBack}
-            className="px-4 py-2 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-2 transition shadow-xs cursor-pointer active:scale-95"
+            className="w-full sm:w-auto justify-center px-4 py-2 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-2 transition shadow-xs cursor-pointer active:scale-95"
           >
             <ArrowLeft className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span>{backButtonLabel}</span>
