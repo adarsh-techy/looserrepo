@@ -234,155 +234,276 @@ export const RealisticCardView: React.FC<RealisticCardViewProps> = ({
   }
 
   /* ------------------------------------------------------------- */
-  /* 2. BANK ACCOUNT DESIGN (Passbook / Financial Card)           */
+  /* 2. BANK ACCOUNT DESIGN (Authentic Bank Passbook & Folio Theme)*/
   /* ------------------------------------------------------------- */
   if (item.category === 'BANK') {
     const isRevealed = !!revealedKeys[`acc_${item.id}`];
 
-    return (
-      <div className="rounded-3xl p-5 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
-        <div>
-          {/* Header */}
-          <div className="flex items-start justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-md shadow-emerald-600/20">
-                <Landmark className="w-6 h-6" />
-              </div>
-              <div>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                  {item.subType || 'SAVINGS'} ACCOUNT
-                </span>
-                <h4 className="text-base font-extrabold text-slate-900 dark:text-white mt-1">
-                  {item.bankName || item.title}
-                </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  Holder: <span className="font-semibold text-slate-800 dark:text-slate-200">{item.holderName || 'Adarsh S'}</span>
-                </p>
+    // Detect authentic bank brand theme
+    const bName = (item.bankName || item.title || '').toUpperCase();
+    const isHdfc = bName.includes('HDFC');
+    const isSbi = bName.includes('SBI') || bName.includes('STATE BANK');
+    const isIcici = bName.includes('ICICI');
+    const isAxis = bName.includes('AXIS');
+    const isKotak = bName.includes('KOTAK');
+
+    const bankConfig = isHdfc
+      ? {
+          name: 'HDFC BANK',
+          tagline: 'We understand your world',
+          headerBg: 'bg-gradient-to-r from-[#004c8f] via-[#00386b] to-[#002244]',
+          headerBorder: 'border-[#002b54]',
+          accentText: 'text-[#004c8f] dark:text-sky-300',
+          badgeStyle: 'bg-blue-100 text-blue-900 dark:bg-blue-950 dark:text-sky-300 border-blue-300 dark:border-blue-800',
+          emblemSvg: (
+            <div className="w-8 h-8 rounded-lg bg-[#004c8f] border border-white/30 p-1 flex items-center justify-center shadow-xs">
+              <div className="grid grid-cols-2 gap-0.5 w-full h-full">
+                <div className="bg-red-600 rounded-xs" />
+                <div className="bg-white rounded-xs" />
+                <div className="bg-white rounded-xs" />
+                <div className="bg-red-600 rounded-xs" />
               </div>
             </div>
+          ),
+        }
+      : isSbi
+      ? {
+          name: 'STATE BANK OF INDIA',
+          tagline: 'भारतीय स्टेट बैंक • The banker to every Indian',
+          headerBg: 'bg-gradient-to-r from-[#0082c6] via-[#1a3c75] to-[#0f2347]',
+          headerBorder: 'border-[#0b1c38]',
+          accentText: 'text-[#0082c6] dark:text-cyan-300',
+          badgeStyle: 'bg-cyan-100 text-cyan-900 dark:bg-cyan-950 dark:text-cyan-300 border-cyan-300 dark:border-cyan-800',
+          emblemSvg: (
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0082c6] to-blue-900 border border-white/40 flex items-center justify-center shadow-xs">
+              <div className="w-4 h-4 rounded-full bg-white flex flex-col items-center justify-end">
+                <div className="w-1 h-2 bg-[#0082c6]" />
+              </div>
+            </div>
+          ),
+        }
+      : isIcici
+      ? {
+          name: 'ICICI BANK',
+          tagline: 'Hum Hai Na, Khayaal Aapka',
+          headerBg: 'bg-gradient-to-r from-[#a21d22] via-[#b92b27] to-[#e65100]',
+          headerBorder: 'border-[#7a1216]',
+          accentText: 'text-[#a21d22] dark:text-orange-300',
+          badgeStyle: 'bg-orange-100 text-orange-900 dark:bg-orange-950 dark:text-orange-300 border-orange-300 dark:border-orange-800',
+          emblemSvg: (
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-400 to-red-600 p-1 flex items-center justify-center font-black text-white text-base shadow-xs">
+              i
+            </div>
+          ),
+        }
+      : isAxis
+      ? {
+          name: 'AXIS BANK',
+          tagline: 'Badhti Ka Naam Zindagi',
+          headerBg: 'bg-gradient-to-r from-[#800020] via-[#9f1239] to-[#4c0519]',
+          headerBorder: 'border-[#380312]',
+          accentText: 'text-[#9f1239] dark:text-rose-300',
+          badgeStyle: 'bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-300 border-rose-300 dark:border-rose-800',
+          emblemSvg: (
+            <div className="w-8 h-8 rounded-lg bg-[#800020] border border-white/30 flex items-center justify-center font-black text-white text-sm shadow-xs">
+              ▲
+            </div>
+          ),
+        }
+      : isKotak
+      ? {
+          name: 'KOTAK MAHINDRA BANK',
+          tagline: "Let's make money simple",
+          headerBg: 'bg-gradient-to-r from-[#ed1c24] via-[#cc141b] to-[#1e3a8a]',
+          headerBorder: 'border-[#990e13]',
+          accentText: 'text-[#ed1c24] dark:text-red-400',
+          badgeStyle: 'bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-300 border-red-300 dark:border-red-800',
+          emblemSvg: (
+            <div className="w-8 h-8 rounded-lg bg-[#ed1c24] border border-white/30 flex items-center justify-center font-black text-white text-sm shadow-xs">
+              ∞
+            </div>
+          ),
+        }
+      : {
+          name: item.bankName || item.title || 'COMMERCIAL BANK',
+          tagline: 'Premier Passbook & Secure Account Ledger',
+          headerBg: 'bg-gradient-to-r from-[#064e3b] via-[#047857] to-[#0f766e]',
+          headerBorder: 'border-[#064e3b]',
+          accentText: 'text-emerald-700 dark:text-emerald-400',
+          badgeStyle: 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800',
+          emblemSvg: (
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-xs">
+              <Landmark className="w-4 h-4" />
+            </div>
+          ),
+        };
 
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => onEdit(item)}
-                title="Edit Account"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-              >
-                <Edit2 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => onDelete(item.id, item.title)}
-                title="Delete Account"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+    return (
+      <div className="relative group rounded-3xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] overflow-hidden border border-slate-300 dark:border-slate-700 shadow-xl bg-gradient-to-b from-white via-slate-50 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 flex flex-col justify-between min-h-[310px]">
+        {/* Subtle Bank Passbook Guilloche Background Grid */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:16px_16px]" />
+
+        {/* 1. Official Bank Institutional Header Bar */}
+        <div className={`relative z-10 px-5 py-3 ${bankConfig.headerBg} text-white flex items-center justify-between border-b ${bankConfig.headerBorder} shadow-md`}>
+          <div className="flex items-center gap-2.5 min-w-0">
+            {bankConfig.emblemSvg}
+            <div className="leading-tight min-w-0">
+              <h4 className="text-sm font-black tracking-wider text-white uppercase truncate">
+                {bankConfig.name}
+              </h4>
+              <p className="text-[9px] font-semibold text-white/80 tracking-wide truncate">
+                {bankConfig.tagline}
+              </p>
             </div>
           </div>
 
-          {/* Account Number & IFSC Grid */}
-          <div className="mt-4 space-y-3">
-            {/* Account Number */}
-            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-                  Account Number
-                </span>
-                <div className="text-base font-black font-mono text-slate-900 dark:text-white tracking-wider">
-                  {isRevealed
-                    ? item.accountNumber || '—'
-                    : item.accountNumber
-                    ? `•••• •••• ${item.accountNumber.slice(-4)}`
-                    : '—'}
-                </div>
-              </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/20 text-white border border-white/30 backdrop-blur-xs">
+              {item.subType || 'SAVINGS'}
+            </span>
+          </div>
+        </div>
 
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={(e) => toggleReveal(`acc_${item.id}`, e)}
-                  className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition"
-                  title={isRevealed ? 'Hide' : 'Reveal'}
-                >
-                  {isRevealed ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-                {item.accountNumber && (
-                  <button
-                    onClick={(e) => handleCopy(item.accountNumber!, `acc_${item.id}`, e)}
-                    className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs flex items-center gap-1 shadow-sm transition"
-                    title="Copy Account Number"
-                  >
-                    {copiedKey === `acc_${item.id}` ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedKey === `acc_${item.id}` ? 'Copied' : 'Copy'}</span>
-                  </button>
-                )}
+        {/* 2. Primary Account Number High-Security Display */}
+        <div className="relative z-10 px-5 pt-4 pb-2">
+          <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                <Lock className="w-3 h-3 text-emerald-500" />
+                <span>Account Number / खाता संख्या</span>
+              </div>
+              <div className="text-xl sm:text-2xl font-black font-mono tracking-wider text-slate-900 dark:text-white mt-0.5">
+                {isRevealed
+                  ? item.accountNumber || '—'
+                  : item.accountNumber
+                  ? `•••• •••• ${item.accountNumber.slice(-4)}`
+                  : '—'}
               </div>
             </div>
 
-            {/* IFSC Code & Branch */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-                    IFSC Code
-                  </span>
-                  <div className="text-sm font-black font-mono text-emerald-600 dark:text-emerald-400">
-                    {item.ifscCode || '—'}
-                  </div>
-                </div>
-                {item.ifscCode && (
-                  <button
-                    onClick={(e) => handleCopy(item.ifscCode!, `ifsc_${item.id}`, e)}
-                    className="p-1 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition"
-                    title="Copy IFSC"
-                  >
-                    {copiedKey === `ifsc_${item.id}` ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
-                )}
-              </div>
+            <div className="flex items-center gap-2 self-end sm:self-center">
+              <button
+                onClick={(e) => toggleReveal(`acc_${item.id}`, e)}
+                className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs flex items-center gap-1 transition shadow-xs"
+                title={isRevealed ? 'Mask Account' : 'Reveal Account'}
+              >
+                {isRevealed ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                <span className="text-[10px] font-bold">{isRevealed ? 'Mask' : 'Reveal'}</span>
+              </button>
 
-              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-                  Branch / Location
+              {item.accountNumber && (
+                <button
+                  onClick={(e) => handleCopy(item.accountNumber!, `acc_${item.id}`, e)}
+                  className="p-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1 shadow-sm transition"
+                  title="Copy Account Number"
+                >
+                  {copiedKey === `acc_${item.id}` ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span className="text-[10px]">{copiedKey === `acc_${item.id}` ? 'Copied' : 'Copy'}</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Passbook Routing Details (IFSC, Branch, CIF Holder, UPI) */}
+        <div className="relative z-10 px-5 py-2 space-y-2 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {/* IFSC Code Box */}
+            <div className="p-2.5 rounded-xl bg-white dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <span className="text-[9px] uppercase font-bold text-slate-400">
+                  IFSC (RTGS / NEFT)
                 </span>
-                <div className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate" title={item.branchLocation || ''}>
-                  {item.branchLocation || 'Not specified'}
+                <div className="text-sm font-black font-mono text-emerald-700 dark:text-emerald-400 tracking-wider">
+                  {item.ifscCode || '—'}
                 </div>
+              </div>
+              {item.ifscCode && (
+                <button
+                  onClick={(e) => handleCopy(item.ifscCode!, `ifsc_${item.id}`, e)}
+                  className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-emerald-600 transition"
+                  title="Copy IFSC"
+                >
+                  {copiedKey === `ifsc_${item.id}` ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              )}
+            </div>
+
+            {/* Account Holder (CIF Name) */}
+            <div className="p-2.5 rounded-xl bg-white dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800">
+              <span className="text-[9px] uppercase font-bold text-slate-400">
+                Account Holder Name
+              </span>
+              <div className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wide truncate">
+                {item.holderName || 'ADARSH S'}
+              </div>
+            </div>
+          </div>
+
+          {/* Branch Location & UPI ID */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {/* Branch */}
+            <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800/80">
+              <span className="text-[9px] uppercase font-bold text-slate-400">Branch & City</span>
+              <div className="text-[11px] font-semibold text-slate-800 dark:text-slate-200 truncate" title={item.branchLocation || ''}>
+                {item.branchLocation || 'Branch not specified'}
               </div>
             </div>
 
             {/* UPI ID */}
-            {item.upiId && (
-              <div className="p-2.5 rounded-xl bg-teal-50/50 dark:bg-teal-950/20 border border-teal-200/50 dark:border-teal-800/40 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <QrCode className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
-                  <span className="text-slate-500 dark:text-slate-400 text-[11px]">UPI ID:</span>
-                  <span className="font-mono font-bold text-teal-700 dark:text-teal-300">{item.upiId}</span>
+            <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
+              <div className="min-w-0">
+                <span className="text-[9px] uppercase font-bold text-slate-400">UPI Virtual ID</span>
+                <div className="text-[11px] font-bold font-mono text-teal-700 dark:text-teal-300 truncate">
+                  {item.upiId || '—'}
                 </div>
+              </div>
+              {item.upiId && (
                 <button
                   onClick={(e) => handleCopy(item.upiId!, `upi_${item.id}`, e)}
-                  className="p-1 text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition"
-                  title="Copy UPI ID"
+                  className="p-1 text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition shrink-0"
+                  title="Copy UPI"
                 >
                   {copiedKey === `upi_${item.id}` ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Footer info & Passbook attachments */}
-        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
-          <span className="text-[11px] truncate max-w-[200px]" title={item.notes || ''}>
-            {item.notes || 'Secure Bank Record'}
-          </span>
-          {item.attachments && item.attachments.length > 0 && (
+        {/* 4. Bottom Passbook Ledger Seal & Actions Bar */}
+        <div className="relative z-10 px-5 py-2.5 bg-slate-100 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+          {/* Simulated Bank Authorized Seal Stamp */}
+          <div className="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400 font-mono font-semibold">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>VERIFIED LEDGER</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {item.attachments && item.attachments.length > 0 && (
+              <button
+                onClick={() => onViewAttachment(item.attachments[0], item.title)}
+                className="flex items-center gap-1 font-bold text-[11px] text-emerald-600 dark:text-emerald-400 hover:underline"
+              >
+                <Paperclip className="w-3.5 h-3.5" />
+                <span>{item.attachments.length} Passbook/Cheque</span>
+              </button>
+            )}
             <button
-              onClick={() => onViewAttachment(item.attachments[0], item.title)}
-              className="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+              onClick={() => onEdit(item)}
+              title="Edit Bank Account"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition"
             >
-              <Paperclip className="w-3.5 h-3.5" />
-              <span>{item.attachments.length} Passbook/Cheque</span>
+              <Edit2 className="w-3.5 h-3.5" />
             </button>
-          )}
+            <button
+              onClick={() => onDelete(item.id, item.title)}
+              title="Delete Bank Account"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
     );
