@@ -256,21 +256,47 @@ export const HealthPage: React.FC = () => {
     setSearchQuery('');
   };
 
-  // Handle Back Navigation
+  // Handle Back Navigation cleanly through drill-down hierarchy
   const handleBack = () => {
     if (viewLevel === 'REPORT_DETAIL') {
       setViewLevel('TEST_REPORTS');
-    } else if (viewLevel === 'DOCTOR_DETAIL') {
+      setSelectedRecord(null);
+      return;
+    }
+    if (viewLevel === 'DOCTOR_DETAIL') {
       setViewLevel('DOCTOR_CARDS');
-    } else if (viewLevel === 'TEST_REPORTS' || viewLevel === 'DOCTOR_CARDS') {
+      setSelectedRecord(null);
+      return;
+    }
+    if (viewLevel === 'TEST_REPORTS' || viewLevel === 'DOCTOR_CARDS') {
       setViewLevel('DEPT_SECTIONS');
-    } else if (viewLevel === 'DEPT_SECTIONS') {
+      setSelectedRecord(null);
+      setSearchQuery('');
+      return;
+    }
+    if (viewLevel === 'DEPT_SECTIONS') {
       setViewLevel('DEPARTMENT');
-    } else if (viewLevel === 'DEPARTMENT') {
+      setSelectedDepartment(null);
+      setSelectedRecord(null);
+      setSearchQuery('');
+      return;
+    }
+    if (viewLevel === 'DEPARTMENT') {
       setViewLevel('ORGAN');
-    } else if (viewLevel === 'ORGAN') {
+      setSelectedOrgan(null);
+      setSelectedDepartment(null);
+      setSelectedRecord(null);
+      setSearchQuery('');
+      return;
+    }
+    if (viewLevel === 'ORGAN') {
       setViewLevel('PERSON');
       setSelectedPerson(null);
+      setSelectedOrgan(null);
+      setSelectedDepartment(null);
+      setSelectedRecord(null);
+      setSearchQuery('');
+      return;
     }
   };
 
@@ -494,11 +520,19 @@ export const HealthPage: React.FC = () => {
         {viewLevel !== 'PERSON' && (
           <button
             onClick={handleBack}
-            className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition flex items-center gap-1 font-semibold shrink-0 cursor-pointer mr-1"
+            className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition flex items-center gap-1.5 font-bold shrink-0 cursor-pointer mr-1 text-xs border border-slate-200 dark:border-slate-700 shadow-xs active:scale-95"
             title="Go to previous step"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span className="text-[11px]">Back</span>
+            <ArrowLeft className="w-3.5 h-3.5 text-rose-500" />
+            <span>
+              {viewLevel === 'ORGAN' && 'Back to Family'}
+              {viewLevel === 'DEPARTMENT' && 'Back to Organs'}
+              {viewLevel === 'DEPT_SECTIONS' && 'Back to Depts'}
+              {viewLevel === 'TEST_REPORTS' && 'Back to Sections'}
+              {viewLevel === 'DOCTOR_CARDS' && 'Back to Sections'}
+              {viewLevel === 'REPORT_DETAIL' && 'Back to Reports'}
+              {viewLevel === 'DOCTOR_DETAIL' && 'Back to Doctors'}
+            </span>
           </button>
         )}
 
@@ -506,6 +540,10 @@ export const HealthPage: React.FC = () => {
           onClick={() => {
             setViewLevel('PERSON');
             setSelectedPerson(null);
+            setSelectedOrgan(null);
+            setSelectedDepartment(null);
+            setSelectedRecord(null);
+            setSearchQuery('');
           }}
           className={`font-semibold hover:text-rose-500 transition shrink-0 ${
             viewLevel === 'PERSON' ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-500'
@@ -518,7 +556,13 @@ export const HealthPage: React.FC = () => {
           <>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <button
-              onClick={() => setViewLevel('ORGAN')}
+              onClick={() => {
+                setViewLevel('ORGAN');
+                setSelectedOrgan(null);
+                setSelectedDepartment(null);
+                setSelectedRecord(null);
+                setSearchQuery('');
+              }}
               className={`font-semibold hover:text-rose-500 transition shrink-0 ${
                 viewLevel === 'ORGAN' ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-500'
               }`}
@@ -532,7 +576,12 @@ export const HealthPage: React.FC = () => {
           <>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <button
-              onClick={() => setViewLevel('DEPARTMENT')}
+              onClick={() => {
+                setViewLevel('DEPARTMENT');
+                setSelectedDepartment(null);
+                setSelectedRecord(null);
+                setSearchQuery('');
+              }}
               className={`font-semibold hover:text-rose-500 transition shrink-0 ${
                 viewLevel === 'DEPARTMENT' ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-500'
               }`}
@@ -549,7 +598,11 @@ export const HealthPage: React.FC = () => {
             <>
               <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <button
-                onClick={() => setViewLevel('DEPT_SECTIONS')}
+                onClick={() => {
+                  setViewLevel('DEPT_SECTIONS');
+                  setSelectedRecord(null);
+                  setSearchQuery('');
+                }}
                 className={`font-semibold hover:text-rose-500 transition shrink-0 ${
                   viewLevel === 'DEPT_SECTIONS' ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-500'
                 }`}
@@ -572,7 +625,10 @@ export const HealthPage: React.FC = () => {
           <>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <button
-              onClick={() => setViewLevel('TEST_REPORTS')}
+              onClick={() => {
+                setViewLevel('TEST_REPORTS');
+                setSelectedRecord(null);
+              }}
               className="font-semibold text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition shrink-0"
             >
               📋 Diagnostic Test Reports
@@ -597,7 +653,10 @@ export const HealthPage: React.FC = () => {
           <>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <button
-              onClick={() => setViewLevel('DOCTOR_CARDS')}
+              onClick={() => {
+                setViewLevel('DOCTOR_CARDS');
+                setSelectedRecord(null);
+              }}
               className="font-semibold text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition shrink-0"
             >
               👨‍⚕️ Consulting Doctors & Prescriptions
@@ -715,17 +774,27 @@ export const HealthPage: React.FC = () => {
       {/* ========================================================================= */}
       {viewLevel === 'ORGAN' && selectedPerson && (
         <div className="space-y-4 animate-fade-in">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <span>Select Organ / Anatomical System for</span>
-                <span className="px-2.5 py-0.5 rounded-xl bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800 text-xs font-bold">
-                  {selectedPerson.name}
-                </span>
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Organ-specific categorization for reports, specialists and clinical diagnoses.
-              </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900/90 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleBack}
+                className="px-3.5 py-2 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-2 transition cursor-pointer shrink-0 active:scale-95 shadow-xs"
+                title="Back to Family Members"
+              >
+                <ArrowLeft className="w-4 h-4 text-rose-500" />
+                <span>Back</span>
+              </button>
+              <div>
+                <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>Select Organ / Anatomical System for</span>
+                  <span className="px-2.5 py-0.5 rounded-xl bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800 text-xs font-bold">
+                    {selectedPerson.name}
+                  </span>
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Organ-specific categorization for reports, specialists and clinical diagnoses.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -785,15 +854,27 @@ export const HealthPage: React.FC = () => {
       {/* ========================================================================= */}
       {viewLevel === 'DEPARTMENT' && selectedPerson && selectedOrgan && (
         <div className="space-y-4 animate-fade-in">
-          <div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span>{selectedOrgan.iconText}</span>
-              <span>{selectedOrgan.label} Care Departments</span>
-              <span className="text-xs text-slate-400 font-normal">({selectedPerson.name})</span>
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Select medical department to view diagnostics, tests & consulting specialists.
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900/90 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleBack}
+                className="px-3.5 py-2 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-2 transition cursor-pointer shrink-0 active:scale-95 shadow-xs"
+                title="Back to Organ Systems"
+              >
+                <ArrowLeft className="w-4 h-4 text-rose-500" />
+                <span>Back</span>
+              </button>
+              <div>
+                <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>{selectedOrgan.iconText}</span>
+                  <span>{selectedOrgan.label} Care Departments</span>
+                  <span className="text-xs text-slate-400 font-normal">({selectedPerson.name})</span>
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Select medical department to view diagnostics, tests & consulting specialists.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -852,21 +933,33 @@ export const HealthPage: React.FC = () => {
       {/* ========================================================================= */}
       {viewLevel === 'DEPT_SECTIONS' && selectedPerson && selectedOrgan && selectedDepartment && (
         <div className="space-y-6 animate-fade-in">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-xl bg-blue-100 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-800 text-xs font-bold">
-                {selectedDepartment}
-              </span>
-              <span className="text-xs text-slate-400 font-medium">
-                {selectedOrgan.name} • {selectedPerson.name}
-              </span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900/90 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleBack}
+                className="px-3.5 py-2 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-2 transition cursor-pointer shrink-0 active:scale-95 shadow-xs"
+                title="Back to Departments"
+              >
+                <ArrowLeft className="w-4 h-4 text-blue-500" />
+                <span>Back</span>
+              </button>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-xl bg-blue-100 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-800 text-xs font-bold">
+                    {selectedDepartment}
+                  </span>
+                  <span className="text-xs text-slate-400 font-medium">
+                    {selectedOrgan.name} • {selectedPerson.name}
+                  </span>
+                </div>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-1">
+                  Select Medical Section
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Choose between viewing diagnostic test reports or consulting doctor profiles.
+                </p>
+              </div>
             </div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-1">
-              Select Medical Section
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Choose between viewing diagnostic test reports or consulting doctor profiles.
-            </p>
           </div>
 
           {/* 2 Primary Action Cards */}
@@ -963,18 +1056,28 @@ export const HealthPage: React.FC = () => {
         <div className="space-y-5 animate-fade-in">
           {/* Header & Controls */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900/90 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 text-[11px] font-black uppercase">
-                  Section 1 • Diagnostics
-                </span>
-                <span className="text-xs text-slate-400 font-medium">
-                  {selectedDepartment} • {selectedPerson.name}
-                </span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleBack}
+                className="px-3.5 py-2 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-2 transition cursor-pointer shrink-0 active:scale-95 shadow-xs"
+                title="Back to Medical Sections"
+              >
+                <ArrowLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>Back</span>
+              </button>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 text-[11px] font-black uppercase">
+                    Section 1 • Diagnostics
+                  </span>
+                  <span className="text-xs text-slate-400 font-medium">
+                    {selectedDepartment} • {selectedPerson.name}
+                  </span>
+                </div>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white mt-0.5">
+                  Diagnostic Reports & Scans
+                </h2>
               </div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white mt-0.5">
-                Diagnostic Reports & Scans
-              </h2>
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5">
@@ -1107,18 +1210,28 @@ export const HealthPage: React.FC = () => {
         <div className="space-y-5 animate-fade-in">
           {/* Header & Controls */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900/90 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-800 text-[11px] font-black uppercase">
-                  Section 2 • Specialists
-                </span>
-                <span className="text-xs text-slate-400 font-medium">
-                  {selectedDepartment} • {selectedPerson.name}
-                </span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleBack}
+                className="px-3.5 py-2 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-2 transition cursor-pointer shrink-0 active:scale-95 shadow-xs"
+                title="Back to Medical Sections"
+              >
+                <ArrowLeft className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span>Back</span>
+              </button>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-800 text-[11px] font-black uppercase">
+                    Section 2 • Specialists
+                  </span>
+                  <span className="text-xs text-slate-400 font-medium">
+                    {selectedDepartment} • {selectedPerson.name}
+                  </span>
+                </div>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white mt-0.5">
+                  Consulting Doctors & Prescriptions
+                </h2>
               </div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white mt-0.5">
-                Consulting Doctors & Prescriptions
-              </h2>
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5">
