@@ -253,48 +253,25 @@ export const DocumentsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Search & Category Quick Switch Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        {/* Category Pills */}
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full sm:w-auto overflow-x-auto">
-          {[
-            { id: 'ALL', label: 'All Vault Cards', count: items.length },
-            { id: 'BANK', label: '1. Bank Accounts', count: bankCount },
-            { id: 'ATM', label: '2. ATM & Cards', count: atmCount },
-            { id: 'DOCUMENTS', label: '3. Identity Docs', count: docsCount },
-            { id: 'INSURANCE', label: '4. Health Insurance', count: insuranceCount },
-          ].map((tab) => {
-            const isSelected = activeCategory === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setActiveCategory(tab.id as any);
-                  setActiveDocSubType('ALL');
-                }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${
-                  isSelected
-                    ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
-              >
-                <span>{tab.label}</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    isSelected
-                      ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400'
-                      : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
-                  }`}
-                >
-                  {tab.count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      {/* Search & Navigation Bar */}
+      <div className="flex items-center justify-between gap-3">
+        {activeCategory !== 'ALL' ? (
+          <button
+            onClick={() => {
+              setActiveCategory('ALL');
+              setActiveDocSubType('ALL');
+            }}
+            className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>← Back to Categories</span>
+          </button>
+        ) : (
+          <div />
+        )}
 
         {/* Search Box */}
-        <div className="relative w-full sm:w-72">
+        <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
