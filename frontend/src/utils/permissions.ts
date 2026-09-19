@@ -42,9 +42,10 @@ export const APP_PAGES: AppPageDef[] = [
   {
     key: 'health',
     path: '/health',
-    label: 'Health & Medical',
+    label: 'Adarsh Family Health',
     category: 'Workspace',
-    description: 'Hierarchical health records by person, organ, department, test reports & doctors',
+    description: 'Adarsh family personal medical records, diagnostics & physician consultations',
+    adminOnly: true,
   },
 
   // 2. Finance & Accounts
@@ -144,8 +145,8 @@ export function hasPageAccess(
   const normalized = pagePath.startsWith('/') ? pagePath : `/${pagePath}`;
   const baseRoute = `/${normalized.split('/')[1]}`;
 
-  // /users management is strictly restricted to AD
-  if (baseRoute === '/users') {
+  // /users and /health are strictly restricted to Adarsh (AD) and his family — NOT for NS
+  if (baseRoute === '/users' || baseRoute === '/health') {
     return user.role === 'AD';
   }
 

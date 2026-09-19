@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store';
 import { showToast } from '../store/slices/uiSlice';
 import { api } from '../services/api';
 import { HealthPerson, HealthRecord, HealthAttachment } from '../types';
@@ -24,6 +24,7 @@ import {
   CheckCircle2,
   Clock,
   X,
+  ShieldAlert,
 } from 'lucide-react';
 
 // Navigation Drill-Down Levels
@@ -442,6 +443,26 @@ export const HealthPage: React.FC = () => {
     return list;
   }, [deptRecords, searchQuery]);
 
+  const currentUser = useSelector((state: RootState) => state.auth.user);
+
+  if (currentUser && currentUser.role !== 'AD') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 space-y-4">
+        <div className="w-16 h-16 rounded-3xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center shadow-lg shadow-rose-500/20">
+          <ShieldAlert className="w-8 h-8" />
+        </div>
+        <div className="max-w-md space-y-2">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+            Access Restricted
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            The Health & Medical Vault is strictly private and confidential, reserved exclusively for Adarsh and family. Partner accounts do not have permission to access this module.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5 flex flex-col min-h-[calc(100vh-120px)] pb-12">
       {/* Top Header Banner */}
@@ -449,10 +470,10 @@ export const HealthPage: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2.5">
             <HeartPulse className="w-6 h-6 text-rose-500 animate-pulse" />
-            <span>Health & Medical Records</span>
+            <span>Adarsh Family Health Vault</span>
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Hierarchical clinical records: Persons ➔ Organs ➔ Departments ➔ Test Reports & Doctor Consultations.
+            Private and confidential medical records, scans, test reports, and physician prescriptions exclusively for Adarsh and family.
           </p>
         </div>
 
@@ -463,7 +484,7 @@ export const HealthPage: React.FC = () => {
             className="px-4 py-2 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-rose-600/30 flex items-center gap-2 self-start sm:self-auto cursor-pointer active:scale-95"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Family / Person Profile</span>
+            <span>Add Family Member</span>
           </button>
         )}
       </div>
@@ -490,7 +511,7 @@ export const HealthPage: React.FC = () => {
             viewLevel === 'PERSON' ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-500'
           }`}
         >
-          Health Profiles
+          Adarsh Family Profiles
         </button>
 
         {selectedPerson && (
@@ -597,9 +618,9 @@ export const HealthPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
               <Users className="w-4 h-4 text-rose-500" />
-              <span>Select Individual / Partner Profile</span>
+              <span>Adarsh Family Profiles</span>
             </h2>
-            <span className="text-xs text-slate-500 font-medium">Click on a person to inspect medical records</span>
+            <span className="text-xs text-slate-500 font-medium">Click on a family member to inspect medical records</span>
           </div>
 
           {isLoading && (
@@ -612,7 +633,6 @@ export const HealthPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {persons.map((person) => {
               const isUserSelf = person.name.toLowerCase().includes('adarsh');
-              const isPartner = person.name.toLowerCase().includes('vishnu');
               return (
                 <div
                   key={person.id}
@@ -636,12 +656,7 @@ export const HealthPage: React.FC = () => {
                           </span>
                           {isUserSelf && (
                             <span className="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900 text-[10px] font-black">
-                              AD
-                            </span>
-                          )}
-                          {isPartner && (
-                            <span className="px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-900 text-[10px] font-black">
-                              NS
+                              Self (AD)
                             </span>
                           )}
                           {person.bloodGroup && (
@@ -1266,7 +1281,7 @@ export const HealthPage: React.FC = () => {
             <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
               <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
                 <User className="w-4 h-4 text-rose-500" />
-                <span>Add Individual / Family Profile</span>
+                <span>Add Family Member Profile</span>
               </h3>
               <button
                 onClick={() => setIsAddPersonModalOpen(false)}
@@ -1284,7 +1299,7 @@ export const HealthPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Adarsh, Vishnu, Sarah..."
+                  placeholder="e.g. Adarsh, Father, Mother, Sarah..."
                   value={personName}
                   onChange={(e) => setPersonName(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-rose-500"
@@ -1301,12 +1316,13 @@ export const HealthPage: React.FC = () => {
                     onChange={(e) => setPersonRelationship(e.target.value)}
                     className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white outline-none"
                   >
-                    <option value="Self">Self</option>
-                    <option value="Partner">Partner</option>
+                    <option value="Self">Self (Adarsh)</option>
                     <option value="Father">Father</option>
                     <option value="Mother">Mother</option>
                     <option value="Spouse">Spouse</option>
                     <option value="Child">Child</option>
+                    <option value="Brother">Brother</option>
+                    <option value="Sister">Sister</option>
                     <option value="Family">Family Member</option>
                   </select>
                 </div>

@@ -86,7 +86,6 @@ export const DoctorDetailPage: React.FC<DoctorDetailPageProps> = ({
   };
 
   const isUserSelf = person.name.toLowerCase().includes('adarsh');
-  const isPartner = person.name.toLowerCase().includes('vishnu');
 
   // Check follow-up urgency
   const getFollowUpStatus = () => {
@@ -195,11 +194,6 @@ export const DoctorDetailPage: React.FC<DoctorDetailPageProps> = ({
                 {isUserSelf && (
                   <span className="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-900 text-[10px] font-black">
                     AD
-                  </span>
-                )}
-                {isPartner && (
-                  <span className="px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-900 text-[10px] font-black">
-                    NS
                   </span>
                 )}
               </div>

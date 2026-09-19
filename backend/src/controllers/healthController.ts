@@ -4,9 +4,21 @@ import { AuthenticatedRequest } from '../middlewares/auth';
 import { logAuditEvent } from '../utils/auditLogger';
 
 /**
- * Seed initial starter persons and records if none exist in the system
+ * Seed initial starter persons and records for Adarsh and family if none exist in the system
  */
 async function ensureSeedPersons(userId: string) {
+  // 0. Remove any legacy Vishnu or Partner entries if present
+  try {
+    await prisma.healthPerson.deleteMany({
+      where: {
+        OR: [
+          { name: { contains: 'Vishnu', mode: 'insensitive' } },
+          { relationship: 'Partner' },
+        ],
+      },
+    });
+  } catch (e) {}
+
   const existing = await prisma.healthPerson.count();
   if (existing > 0) return;
 
@@ -18,25 +30,38 @@ async function ensureSeedPersons(userId: string) {
       gender: 'Male',
       dob: '1998-05-14',
       bloodGroup: 'O+',
-      notes: 'No known drug allergies. Active lifestyle & routine annual health checks.',
+      notes: 'Adarsh personal medical profile. Routine annual health checks & fitness monitoring.',
       ownerId: userId,
     },
   });
 
-  // 2. Create Vishnu (Partner)
-  const vishnu = await prisma.healthPerson.create({
+  // 2. Create Father (Family)
+  const father = await prisma.healthPerson.create({
     data: {
-      name: 'Vishnu',
-      relationship: 'Partner',
+      name: 'Father',
+      relationship: 'Father',
       gender: 'Male',
-      dob: '1997-11-20',
-      bloodGroup: 'B+',
-      notes: 'Executive partner profile. Regular health monitoring and dental checkups.',
+      dob: '1968-08-10',
+      bloodGroup: 'O+',
+      notes: 'Adarsh family profile — Father. Regular cardiac and blood sugar monitoring.',
       ownerId: userId,
     },
   });
 
-  // Sample Records for Adarsh - Heart / Cardiology
+  // 3. Create Mother (Family)
+  const mother = await prisma.healthPerson.create({
+    data: {
+      name: 'Mother',
+      relationship: 'Mother',
+      gender: 'Female',
+      dob: '1972-03-25',
+      bloodGroup: 'A+',
+      notes: 'Adarsh family profile — Mother. Bone density checks and thyroid screening.',
+      ownerId: userId,
+    },
+  });
+
+  // Sample Records for Adarsh - Heart / Cardiology & Lungs
   await prisma.healthRecord.createMany({
     data: [
       {
@@ -98,54 +123,34 @@ async function ensureSeedPersons(userId: string) {
           { name: 'Chest_XRay_Digital_PA.jpg', size: '3.4 MB', type: 'image/jpeg' },
         ]),
       },
-    ],
-  });
-
-  // Sample Records for Vishnu - Bones / Orthopedics & General Medicine
-  await prisma.healthRecord.createMany({
-    data: [
       {
-        personId: vishnu.id,
-        organName: 'Bones',
-        departmentName: 'Orthopedics',
+        personId: father.id,
+        organName: 'Heart',
+        departmentName: 'Cardiology',
         recordType: 'TEST_REPORT',
-        testCategory: 'MRI_CT',
-        testName: 'Right Knee High-Resolution MRI',
-        testDate: '2026-07-02',
-        labName: 'Manipal Hospital Imaging Center',
-        resultsSummary: 'Intact anterior and posterior cruciate ligaments. Mild grade 1 medial meniscus strain without tear. Joint effusion absent.',
+        testCategory: 'ECG_ECHO',
+        testName: 'Treadmill Stress Test (TMT)',
+        testDate: '2026-04-10',
+        labName: 'Manipal Heart Center',
+        resultsSummary: 'Negative for inducible myocardial ischemia at 9 Mets. Normal BP and HR response.',
         status: 'NORMAL',
         attachments: JSON.stringify([
-          { name: 'Right_Knee_MRI_Scan.pdf', size: '4.2 MB', type: 'application/pdf' },
+          { name: 'Father_TMT_Report.pdf', size: '2.1 MB', type: 'application/pdf' },
         ]),
       },
       {
-        personId: vishnu.id,
+        personId: mother.id,
         organName: 'Bones',
         departmentName: 'Orthopedics',
-        recordType: 'DOCTOR_CONSULTATION',
-        doctorName: 'Dr. Anita Desai',
-        doctorTitle: 'MS (Orthopedics), M.Ch (Joint Reconstruction)',
-        hospitalName: 'Manipal Hospital Orthopedic Center',
-        contactPhone: '+91 98200 67890',
-        consultDate: '2026-07-05',
-        followUpDate: '2026-10-05',
-        diagnosis: 'Mild Muscular Strain & Patellar Tendon Overuse (Sports related)',
-        prescription: '1. Tab Glucosamine + MSM — 1 tab OD for 60 days\n2. Quadriceps strengthening exercises & Physiotherapy sessions twice a week\n3. Cold compression post physical activities',
-      },
-      {
-        personId: vishnu.id,
-        organName: 'Blood',
-        departmentName: 'General Medicine',
         recordType: 'TEST_REPORT',
-        testCategory: 'BLOOD_TEST',
-        testName: 'Complete Blood Count (CBC) & Serum Ferritin',
-        testDate: '2026-08-01',
-        labName: 'Metropolis Healthcare Labs',
-        resultsSummary: 'Hemoglobin: 15.2 g/dL, WBC: 7,400 /mcL, Platelets: 280,000 /mcL. Normal indices.',
+        testCategory: 'X_RAY',
+        testName: 'Bilateral Knee Joint X-Ray (AP & Lateral)',
+        testDate: '2026-07-15',
+        labName: 'Fortis Radiology Lab',
+        resultsSummary: 'Mild degenerative changes in bilateral medial joint compartments consistent with age. No fracture or subluxation.',
         status: 'NORMAL',
         attachments: JSON.stringify([
-          { name: 'CBC_Report_Metropolis.pdf', size: '1.1 MB', type: 'application/pdf' },
+          { name: 'Mother_Knee_XRay.jpg', size: '3.1 MB', type: 'image/jpeg' },
         ]),
       },
     ],

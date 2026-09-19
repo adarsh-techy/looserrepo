@@ -9,11 +9,22 @@ import {
   deleteHealthRecord,
   getSingleHealthRecord,
 } from '../controllers/healthController';
-import { requireAuth } from '../middlewares/auth';
+import { requireAuth, AuthenticatedRequest } from '../middlewares/auth';
+import { Response, NextFunction } from 'express';
 
 const router = Router();
 
 router.use(requireAuth);
+
+// Access Restriction: Exclusively for Adarsh (AD) and family, not for NS
+router.use((req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  if (req.user?.role !== 'AD') {
+    return res.status(403).json({
+      error: 'Access Denied: Health & Medical Vault is strictly private to Adarsh and family.',
+    });
+  }
+  next();
+});
 
 // Persons / Family Profiles
 router.get('/persons', getHealthPersons);
