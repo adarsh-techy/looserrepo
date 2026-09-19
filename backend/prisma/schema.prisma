@@ -42,6 +42,7 @@ model User {
   paymentRecords  PaymentRecord[]  @relation("UserPaymentRecords")
   moneyRecords    MoneyRecord[]    @relation("UserMoneyRecords")
   trashItems      TrashItem[]      @relation("UserTrashItems")
+  healthPersons   HealthPerson[]   @relation("UserHealthPersons")
 }
 
 model DayToDayNote {
@@ -321,4 +322,59 @@ model TrashItem {
   @@index([itemType])
   @@index([deletedById])
   @@index([deletedAt])
+}
+
+model HealthPerson {
+  id           String         @id @default(uuid())
+  name         String
+  relationship String         @default("Self") // Self, Partner, Father, Mother, Family
+  gender       String?        // Male, Female, Other
+  dob          String?        // YYYY-MM-DD or Age
+  bloodGroup   String?        // A+, A-, B+, B-, O+, O-, AB+, AB-
+  avatar       String?
+  notes        String?
+  ownerId      String
+  owner        User           @relation("UserHealthPersons", fields: [ownerId], references: [id], onDelete: Cascade)
+  records      HealthRecord[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([ownerId])
+  @@index([name])
+}
+
+model HealthRecord {
+  id             String       @id @default(uuid())
+  personId       String
+  person         HealthPerson @relation(fields: [personId], references: [id], onDelete: Cascade)
+  organName      String       // Heart, Brain, Lungs, Liver, Kidneys, Bones, Eyes, General
+  departmentName String       // Cardiology, Neurology, Pulmonology, Orthopedics, etc.
+  recordType     String       // TEST_REPORT or DOCTOR_CONSULTATION
+
+  // Test Report Details
+  testCategory   String?      // X_RAY, BLOOD_TEST, MRI_CT, ULTRASOUND, ECG_ECHO, PATHOLOGY, OTHER
+  testName       String?
+  testDate       String?
+  labName        String?
+  resultsSummary String?
+  status         String?      @default("NORMAL") // NORMAL, ATTENTION, PENDING
+  attachments    String       @default("[]") // JSON string of attachments
+
+  // Doctor Consultation Details
+  doctorName     String?
+  doctorTitle    String?      // MD, DM (Cardiology), MS (Ortho), etc.
+  hospitalName   String?
+  contactPhone   String?
+  consultDate    String?
+  followUpDate   String?
+  diagnosis      String?
+  prescription   String?
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([personId])
+  @@index([organName])
+  @@index([departmentName])
+  @@index([recordType])
 }

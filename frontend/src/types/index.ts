@@ -355,3 +355,57 @@ export interface TrashItem {
   deletedAt: string;
 }
 
+export interface HealthAttachment {
+  name: string;
+  size?: string | number;
+  type?: string;
+  dataUrl?: string;
+}
+
+export interface HealthPerson {
+  id: string;
+  name: string;
+  relationship: string;
+  gender?: string;
+  dob?: string;
+  bloodGroup?: string;
+  avatar?: string;
+  notes?: string;
+  ownerId?: string;
+  totalTests?: number;
+  totalDoctors?: number;
+  activeOrgans?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HealthRecord {
+  id: string;
+  personId: string;
+  organName: string;
+  departmentName: string;
+  recordType: 'TEST_REPORT' | 'DOCTOR_CONSULTATION';
+
+  // Test Report Fields
+  testCategory?: 'X_RAY' | 'BLOOD_TEST' | 'MRI_CT' | 'ULTRASOUND' | 'ECG_ECHO' | 'PATHOLOGY' | 'OTHER';
+  testName?: string;
+  testDate?: string;
+  labName?: string;
+  resultsSummary?: string;
+  status?: 'NORMAL' | 'ATTENTION' | 'PENDING';
+  attachments?: HealthAttachment[];
+
+  // Doctor Consultation Fields
+  doctorName?: string;
+  doctorTitle?: string;
+  hospitalName?: string;
+  contactPhone?: string;
+  consultDate?: string;
+  followUpDate?: string;
+  diagnosis?: string;
+  prescription?: string;
+
+  createdAt: string;
+  updatedAt: string;
+}
+

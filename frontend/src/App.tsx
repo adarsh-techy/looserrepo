@@ -23,6 +23,7 @@ import { MoneyManagementPage } from './pages/MoneyManagementPage';
 import { WorksPage } from './pages/WorksPage';
 import { WorkFormPage } from './pages/WorkFormPage';
 import { TrashPage } from './pages/TrashPage';
+import { HealthPage } from './pages/HealthPage';
 
 
 import { hasPageAccess, getDefaultAccessibleRoute } from './utils/permissions';
@@ -100,6 +101,7 @@ export const App: React.FC = () => {
           <Route path="users" element={<PermissionRoute path="/users"><UsersPage /></PermissionRoute>} />
           <Route path="notifications" element={<PermissionRoute path="/notifications"><NotificationsPage /></PermissionRoute>} />
           <Route path="reminders-notes" element={<PermissionRoute path="/reminders-notes"><RemindersNotesPage /></PermissionRoute>} />
+          <Route path="health" element={<PermissionRoute path="/health"><HealthPage /></PermissionRoute>} />
           <Route path="trash" element={<PermissionRoute path="/trash"><TrashPage /></PermissionRoute>} />
           <Route path="*" element={<Navigate to={defaultRoute} replace />} />
 

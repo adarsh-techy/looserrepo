@@ -14,6 +14,7 @@ import workRoutes from './workRoutes';
 import paymentRoutes from './paymentRoutes';
 import moneyRoutes from './moneyRoutes';
 import trashRoutes from './trashRoutes';
+import healthRoutes from './healthRoutes';
 
 const router = Router();
 
@@ -32,6 +33,7 @@ router.use('/works', workRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/money', moneyRoutes);
 router.use('/trash', trashRoutes);
+router.use('/health', healthRoutes);
 
 export default router;
 

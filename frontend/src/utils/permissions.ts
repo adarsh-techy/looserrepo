@@ -39,6 +39,13 @@ export const APP_PAGES: AppPageDef[] = [
     category: 'Workspace',
     description: 'Business ideas, revenue models & core assets',
   },
+  {
+    key: 'health',
+    path: '/health',
+    label: 'Health & Medical',
+    category: 'Workspace',
+    description: 'Hierarchical health records by person, organ, department, test reports & doctors',
+  },
 
   // 2. Finance & Accounts
   {

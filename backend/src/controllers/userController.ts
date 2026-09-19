@@ -89,6 +89,7 @@ export async function createUser(req: AuthenticatedRequest, res: Response) {
         '/business',
         '/future-plans',
         '/day-to-day',
+        '/health',
         '/reminders-notes',
         '/messages',
         '/notifications',

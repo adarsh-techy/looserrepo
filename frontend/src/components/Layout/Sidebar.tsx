@@ -23,6 +23,7 @@ import {
   Receipt,
   Wallet,
   Trash2,
+  HeartPulse,
 } from 'lucide-react';
 
 
@@ -60,6 +61,7 @@ export const Sidebar: React.FC = () => {
         { to: '/day-to-day', label: 'Day to Day', icon: CalendarDays },
         { to: '/future-plans', label: 'Future Plans', icon: Compass },
         { to: '/business', label: 'Business', icon: Briefcase },
+        { to: '/health', label: 'Health', icon: HeartPulse },
       ],
     },
     {
