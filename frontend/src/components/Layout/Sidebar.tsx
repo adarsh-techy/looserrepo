@@ -117,7 +117,7 @@ export const Sidebar: React.FC = () => {
           </div>
           <div>
             <h1 className="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-              Looser <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-mono font-medium border border-blue-500/20 dark:border-blue-500/30">Vault</span>
+              Loosers <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-mono font-medium border border-blue-500/20 dark:border-blue-500/30">Vault</span>
             </h1>
             <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">Dual-Partner Enclave</p>
           </div>

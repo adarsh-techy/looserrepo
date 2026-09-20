@@ -77,7 +77,7 @@ export const RegisterPage: React.FC = () => {
           </div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Create Partner Account</h1>
           <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 px-2 leading-relaxed">
-            Register your partner credentials for Looser Secure Enclave
+            Register your partner credentials for Loosers Secure Enclave
           </p>
         </div>
 

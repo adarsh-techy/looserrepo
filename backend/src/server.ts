@@ -67,7 +67,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 if (process.env.NODE_ENV !== 'test') {
   server.listen(config.port, () => {
     console.log(`=========================================`);
-    console.log(`🔐 Looser Secure Vault Server running`);
+    console.log(`🔐 Loosers Secure Vault Server running`);
     console.log(`📍 Port: ${config.port}`);
     console.log(`🌐 Health: http://localhost:${config.port}/api/health`);
     console.log(`🛡️  Environment: ${config.nodeEnv}`);

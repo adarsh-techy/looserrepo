@@ -68,7 +68,7 @@ export const LoginPage: React.FC = () => {
           <div className="inline-flex p-2.5 sm:p-3.5 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-xl shadow-blue-500/20 mb-1">
             <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Looser Secure Vault</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Loosers Secure Vault</h1>
           <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 px-2 leading-relaxed">
             Dual-Partner High-Security Business, Passwords & Emergency Vault
           </p>

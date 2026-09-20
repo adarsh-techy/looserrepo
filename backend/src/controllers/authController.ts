@@ -273,8 +273,8 @@ export async function setup2FA(req: AuthenticatedRequest, res: Response) {
   if (!user) return res.status(404).json({ error: 'User not found' });
 
   const secret = speakeasy.generateSecret({
-    name: `Looser Vault (${user.email})`,
-    issuer: 'Looser Vault System',
+    name: `Loosers Vault (${user.email})`,
+    issuer: 'Loosers Vault System',
     length: 20,
   });
 

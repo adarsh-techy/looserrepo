@@ -1,4 +1,4 @@
-# Looser Vault: Dual-User High-Security Business & Emergency Enclave
+# Loosers Vault: Dual-User High-Security Business & Emergency Enclave
 
 A modern, highly secure web application designed specifically for **two business partners/associates** to manage joint business knowledge, future roadmaps, encrypted passwords, targeted partner notes, government documents & cards, family health vaults, and secret emergency directives with a 3-step emergency access protocol and real-time siren security alerts.
 
@@ -166,7 +166,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 |---|---|---|
 | `VITE_API_URL` | Base URL for API requests | `/api` (local) or `https://api.domain.com/api` |
 | `VITE_SOCKET_URL` | Real-time WebSocket server URL | `/` (local) or `https://api.domain.com` |
-| `VITE_APP_NAME` | Display title | `Looser Secure Vault` |
+| `VITE_APP_NAME` | Display title | `Loosers Secure Vault` |
 
 ---
 

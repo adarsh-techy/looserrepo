@@ -26,7 +26,7 @@ export const exportPaymentsToPDF = (
   // Title & Header Branding
   doc.setFontSize(18);
   doc.setTextColor(30, 41, 59); // slate-800
-  doc.text('LOOSER VAULT — INCOME TAX RETURN (ITR) LEDGER', 14, 16);
+  doc.text('LOOSERS VAULT — INCOME TAX RETURN (ITR) LEDGER', 14, 16);
 
   doc.setFontSize(11);
   doc.setTextColor(71, 85, 105); // slate-600
