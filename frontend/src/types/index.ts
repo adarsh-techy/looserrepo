@@ -59,6 +59,7 @@ export interface VaultItem {
   websiteUrl?: string;
   notes?: string;
   attachments: { name: string; url?: string }[];
+  isPersonal?: boolean;
   ownerId: string;
   owner: { id: string; name: string; email: string };
   createdAt: string;

@@ -39,13 +39,19 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="shrink-0 h-14 sm:h-16 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-3 sticky top-0 z-20 transition-colors duration-200">
+    <header
+      className="shrink-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-3 sticky top-0 z-20 transition-colors duration-200"
+      style={{
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        minHeight: 'calc(3.5rem + env(safe-area-inset-top, 0px))',
+      }}
+    >
       {/* Left side: Back Button + Hamburger on mobile + Mini Brand */}
       <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink">
         {/* Universal Back Button across all pages (Desktop/Tablet only) */}
         <button
           onClick={() => navigate(-1)}
-          className="hidden md:flex items-center gap-1 px-2.5 py-1.5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 transition shrink-0 active:scale-95 border border-slate-200 dark:border-slate-700 shadow-xs cursor-pointer"
+          className="hidden md:flex items-center gap-1 px-2.5 py-1.5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 transition shrink-0 active:scale-95 border border-slate-200 dark:border-slate-700 shadow-xs cursor-pointer touch-manipulation"
           title="Go back to previous page"
         >
           <ArrowLeft className="w-4 h-4 text-slate-600 dark:text-slate-400" />
@@ -55,7 +61,7 @@ export const Header: React.FC = () => {
         {/* Mobile Hamburger Toggle */}
         <button
           onClick={() => dispatch(toggleMobileSidebar())}
-          className="md:hidden p-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0 active:scale-95"
+          className="md:hidden p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0 active:scale-95 touch-manipulation"
           title="Open Vault Navigation"
         >
           <Menu className="w-5 h-5" />

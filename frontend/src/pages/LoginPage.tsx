@@ -46,20 +46,26 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row bg-white dark:bg-slate-950 overflow-x-hidden transition-colors duration-200 relative">
-      {/* Theme Toggle Top Right (Fixed for seamless access on both mobile and desktop) */}
-      <div className="fixed top-3.5 right-3.5 sm:top-6 sm:right-6 z-30">
+    <div className="min-h-[100dvh] w-full flex flex-col md:flex-row bg-white dark:bg-slate-950 overflow-x-hidden transition-colors duration-200 relative">
+      {/* Theme Toggle Top Right (Fixed for seamless access with safe-area offset) */}
+      <div
+        className="fixed z-30"
+        style={{
+          top: 'max(calc(env(safe-area-inset-top, 0px) + 0.75rem), 0.875rem)',
+          right: 'max(calc(env(safe-area-inset-right, 0px) + 0.75rem), 0.875rem)',
+        }}
+      >
         <button
           onClick={() => dispatch(toggleTheme())}
-          className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white shadow-lg transition"
+          className="p-2.5 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white shadow-lg transition touch-manipulation cursor-pointer"
           title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
         >
           {theme === 'dark' ? <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-700" />}
         </button>
       </div>
 
-      {/* Left Side: 50% Screen on Desktop, Exactly Half-Screen (50vh) on Mobile */}
-      <div className="relative w-full md:w-1/2 h-[50vh] md:h-screen md:min-h-screen bg-slate-950 overflow-hidden shrink-0 shadow-[0_16px_32px_-4px_rgba(255,255,255,0.75)] z-10">
+      {/* Left Side: 50% Screen on Desktop, Adaptive Banner on Mobile */}
+      <div className="relative w-full md:w-1/2 h-44 sm:h-64 md:h-[100dvh] md:min-h-screen bg-slate-950 overflow-hidden shrink-0 shadow-[0_16px_32px_-4px_rgba(255,255,255,0.75)] z-10">
         <img
           src={logoImg}
           alt="Loosers"
@@ -69,13 +75,16 @@ export const LoginPage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-black/10 pointer-events-none" />
 
         {/* White Shadow / Luminous Fade at the end of the image on mobile */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-24 md:hidden bg-gradient-to-t from-white/90 via-white/40 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 h-14 sm:h-20 md:hidden bg-gradient-to-t from-white/90 via-white/40 to-transparent pointer-events-none" />
       </div>
 
-      {/* Right Side: Form Column (min-h-[50vh] on mobile, 100vh on desktop) */}
-      <div className="w-full md:w-1/2 min-h-[50vh] md:min-h-screen flex flex-col justify-center items-center px-5 py-8 sm:px-12 lg:px-16 relative bg-white dark:bg-slate-950 transition-colors duration-200">
+      {/* Right Side: Form Column */}
+      <div
+        className="w-full md:w-1/2 flex-1 md:min-h-[100dvh] flex flex-col justify-center items-center px-4 py-6 sm:px-12 lg:px-16 relative bg-white dark:bg-slate-950 transition-colors duration-200"
+        style={{ paddingBottom: 'max(calc(env(safe-area-inset-bottom, 0px) + 1.5rem), 1.5rem)' }}
+      >
         {/* Centered Form Container */}
-        <div className="w-full max-w-sm sm:max-w-md space-y-5 sm:space-y-6 my-auto py-4 sm:py-8">
+        <div className="w-full max-w-sm sm:max-w-md space-y-4 sm:space-y-6 my-auto py-2 sm:py-8">
           <div className="space-y-1 sm:space-y-2">
             <h1 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">Sign In</h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">

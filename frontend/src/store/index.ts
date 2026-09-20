@@ -13,12 +13,14 @@ import chatReducer from './slices/chatSlice';
 import worksReducer from './slices/worksSlice';
 import paymentsReducer from './slices/paymentsSlice';
 import moneyReducer from './slices/moneySlice';
+import personalVaultReducer from './slices/personalVaultSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     ui: uiReducer,
     vault: vaultReducer,
+    personalVault: personalVaultReducer,
     business: businessReducer,
     futurePlans: futurePlansReducer,
     sharedNotes: sharedNotesReducer,

@@ -112,11 +112,14 @@ export const MainLayout: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-blue-600 selection:text-white transition-colors duration-200">
+    <div className="flex h-[100dvh] w-full overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-blue-600 selection:text-white transition-colors duration-200">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 h-[100dvh] overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 pb-28 md:pb-8 bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
+        <main
+          className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-950 transition-colors duration-200"
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 5.5rem)' }}
+        >
           <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 animate-fade-in">
             <Outlet />
           </div>
@@ -125,8 +128,8 @@ export const MainLayout: React.FC = () => {
         {/* Mobile Bottom Navigation Bar (md:hidden) */}
         <nav
           aria-label="Mobile Navigation"
-          className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800/90 px-2 py-1.5 flex items-center justify-around shadow-2xl transition-all"
-          style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 6px)' }}
+          className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-t border-slate-200/90 dark:border-slate-800/90 px-2 pt-1.5 flex items-center justify-around shadow-2xl transition-all"
+          style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 8px)' }}
         >
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
@@ -136,7 +139,7 @@ export const MainLayout: React.FC = () => {
               <NavLink
                 key={item.to}
                 to={item.to}
-                className={`relative flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition-all active:scale-95 ${
+                className={`relative flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition-all active:scale-95 touch-manipulation min-w-[54px] ${
                   isActive
                     ? item.isAlert
                       ? 'text-red-600 dark:text-red-400 font-bold'
@@ -174,7 +177,7 @@ export const MainLayout: React.FC = () => {
           <button
             type="button"
             onClick={() => dispatch(toggleMobileSidebar())}
-            className="flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white active:scale-95 transition-all"
+            className="flex flex-col items-center justify-center py-1 px-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white active:scale-95 transition-all touch-manipulation min-w-[54px]"
             title="Open Full Menu"
           >
             <div className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -191,7 +194,10 @@ export const MainLayout: React.FC = () => {
       <PartnerBreachAlertModal />
 
       {activeToast && (
-        <div className="fixed bottom-20 md:bottom-6 right-4 left-4 md:left-auto md:right-6 z-50 animate-bounce-short">
+        <div
+          className="fixed md:bottom-6 right-4 left-4 md:left-auto md:right-6 z-50 animate-bounce-short"
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 4.75rem)' }}
+        >
           <div
             className={`flex items-center justify-between gap-3 px-4 py-3 rounded-2xl shadow-2xl border text-xs sm:text-sm font-medium ${
               activeToast.type === 'success'
@@ -210,7 +216,7 @@ export const MainLayout: React.FC = () => {
               {activeToast.type === 'info' && <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />}
               <span className="truncate">{activeToast.message}</span>
             </div>
-            <button onClick={() => dispatch(clearToast())} className="p-1 hover:opacity-75 shrink-0">
+            <button onClick={() => dispatch(clearToast())} className="p-1 hover:opacity-75 shrink-0 cursor-pointer">
               <X className="w-4 h-4" />
             </button>
           </div>

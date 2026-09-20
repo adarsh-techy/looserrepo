@@ -19,8 +19,8 @@ export const PartnerNoteOnLoginModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 backdrop-blur-md p-3 sm:p-4 animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-500/40 rounded-2xl sm:rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden text-slate-800 dark:text-slate-100 max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 backdrop-blur-md p-3 sm:p-4 animate-fade-in overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-500/40 rounded-2xl sm:rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden text-slate-800 dark:text-slate-100 max-h-[92dvh] flex flex-col my-auto">
         <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 dark:from-indigo-950 dark:via-purple-950 dark:to-slate-950 p-4 sm:p-6 border-b border-indigo-500/30 dark:border-slate-800 flex items-center justify-between text-white shrink-0">
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             <div className="p-2.5 sm:p-3 rounded-2xl bg-white/20 dark:bg-indigo-500/20 text-white dark:text-indigo-400 border border-white/30 dark:border-indigo-500/30 shrink-0">

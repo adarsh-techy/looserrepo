@@ -48,8 +48,8 @@ export const SecuritySirenAlertModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-red-950/80 backdrop-blur-lg p-3 sm:p-4 animate-pulse-fast">
-      <div className="bg-slate-950 border-2 border-red-600 rounded-2xl sm:rounded-3xl w-full max-w-lg shadow-[0_0_50px_rgba(239,68,68,0.6)] overflow-hidden text-slate-100 max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-red-950/80 backdrop-blur-lg p-3 sm:p-4 animate-pulse-fast overflow-y-auto">
+      <div className="bg-slate-950 border-2 border-red-600 rounded-2xl sm:rounded-3xl w-full max-w-lg shadow-[0_0_50px_rgba(239,68,68,0.6)] overflow-hidden text-slate-100 max-h-[92dvh] flex flex-col my-auto">
         {/* Top Warning Banner */}
         <div className="bg-red-600 text-white p-4 sm:p-5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">

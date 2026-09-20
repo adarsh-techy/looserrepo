@@ -16,9 +16,10 @@ import {
 interface Props {
   item: VaultItem;
   onClose: () => void;
+  onConfirm?: (password: string) => Promise<void>;
 }
 
-export const DeleteVaultItemModal: React.FC<Props> = ({ item, onClose }) => {
+export const DeleteVaultItemModal: React.FC<Props> = ({ item, onClose, onConfirm }) => {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.auth.user);
 
@@ -32,6 +33,11 @@ export const DeleteVaultItemModal: React.FC<Props> = ({ item, onClose }) => {
     setLoading(true);
 
     try {
+      if (onConfirm) {
+        await onConfirm(password);
+        onClose();
+        return;
+      }
       await dispatch(deleteVaultItemAction({ id: item.id, password })).unwrap();
       dispatch(
         showToast({
@@ -48,8 +54,8 @@ export const DeleteVaultItemModal: React.FC<Props> = ({ item, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/85 backdrop-blur-md p-3 sm:p-4 animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/50 rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100 max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/85 backdrop-blur-md p-3 sm:p-4 animate-fade-in overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/50 rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100 max-h-[92dvh] flex flex-col my-auto">
         {/* Header */}
         <div className="bg-gradient-to-r from-red-600 via-rose-600 to-red-700 dark:from-red-950 dark:via-slate-900 dark:to-red-950/80 p-4 sm:p-5 border-b border-red-500/30 dark:border-red-900/40 flex items-center justify-between text-white shrink-0">
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">

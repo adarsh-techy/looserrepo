@@ -25,6 +25,7 @@ import {
   Trash2,
   HeartPulse,
   CreditCard,
+  LockKeyhole,
 } from 'lucide-react';
 
 
@@ -83,6 +84,7 @@ export const Sidebar: React.FC = () => {
       title: 'Security & Vault',
       items: [
         { to: '/passwords', label: 'Passwords', icon: KeyRound },
+        { to: '/personal-passwords', label: 'Personal Passwords', icon: LockKeyhole },
         { to: '/documents', label: 'Documents & Cards', icon: CreditCard },
         { to: '/secret-notes', label: 'Secret Notes', icon: ShieldAlert, isSecretNotes: true },
         { to: '/my-secret-notes', label: 'My Secret Notes', icon: FileKey },
@@ -110,7 +112,10 @@ export const Sidebar: React.FC = () => {
   const renderSidebarContent = (isMobile = false) => (
     <div className="flex flex-col h-full bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       {/* Brand Header */}
-      <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+      <div
+        className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0"
+        style={isMobile ? { paddingTop: 'max(env(safe-area-inset-top, 0px), 1rem)' } : undefined}
+      >
         <div className="flex items-center gap-3">
           <div className="p-2 sm:p-2.5 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-lg shadow-blue-500/25 shrink-0">
             <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -126,7 +131,7 @@ export const Sidebar: React.FC = () => {
         {isMobile && (
           <button
             onClick={() => dispatch(setMobileSidebarOpen(false))}
-            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition touch-manipulation"
           >
             <X className="w-5 h-5" />
           </button>
@@ -152,7 +157,7 @@ export const Sidebar: React.FC = () => {
                     if (isMobile) dispatch(setMobileSidebarOpen(false));
                   }}
                   className={({ isActive }) =>
-                    `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+                    `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group touch-manipulation ${
                       isActive
                         ? isSecret
                           ? 'bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/30 font-bold'
@@ -180,7 +185,10 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       {/* User Profile & Logout Bottom Card */}
-      <div className="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 shrink-0">
+      <div
+        className="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 shrink-0"
+        style={isMobile ? { paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 0.75rem)' } : undefined}
+      >
         <div className="flex items-center justify-between gap-2 p-2 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-md shrink-0">
@@ -195,7 +203,7 @@ export const Sidebar: React.FC = () => {
           <button
             onClick={() => dispatch(logout())}
             title="Logout"
-            className="p-2 text-slate-500 hover:text-red-500 rounded-xl hover:bg-red-500/10 transition shrink-0"
+            className="p-2 text-slate-500 hover:text-red-500 rounded-xl hover:bg-red-500/10 transition shrink-0 touch-manipulation"
           >
             <LogOut className="w-4 h-4" />
           </button>
@@ -221,7 +229,7 @@ export const Sidebar: React.FC = () => {
 
       {/* Mobile Slide-in Drawer */}
       <aside
-        className={`md:hidden fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 shadow-2xl transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] h-[100dvh] bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 shadow-2xl transition-transform duration-300 ease-in-out ${
           isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

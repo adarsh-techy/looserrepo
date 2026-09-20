@@ -187,11 +187,14 @@ export const DocumentsPage: React.FC = () => {
     : 'Back to Categories';
 
   return (
-    <div className="p-4 sm:p-8 max-w-7xl mx-auto space-y-6 animate-fade-in text-slate-900 dark:text-slate-100">
+    <div className="w-full max-w-7xl mx-auto space-y-5 sm:space-y-6 animate-fade-in text-slate-900 dark:text-slate-100">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 dark:border-slate-300 text-xs font-bold flex items-center gap-2 animate-bounce-short">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 dark:text-emerald-600" />
+        <div
+          className="fixed md:bottom-6 right-4 left-4 md:left-auto md:right-6 z-50 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 dark:border-slate-300 text-xs font-bold flex items-center gap-2 animate-bounce-short"
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 4.75rem)' }}
+        >
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 dark:text-emerald-600 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}

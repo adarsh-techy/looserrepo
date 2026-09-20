@@ -854,8 +854,8 @@ export const PaymentsPage: React.FC = () => {
               </div>
             ) : (
               <div>
-                {/* Financial Table with Column Borders & Pink-200 Headers */}
-                <div className="overflow-x-auto">
+                {/* Desktop Financial Table with Column Borders */}
+                <div className="overflow-x-auto hidden md:block">
                   <table className="w-full min-w-[850px] text-left border-collapse border border-slate-200 dark:border-slate-700">
                     <thead>
                       <tr className="bg-pink-100/70  text-pink-800 dark:text-pink-200 text-[11px] font-bold tracking-wider">
@@ -992,6 +992,97 @@ export const PaymentsPage: React.FC = () => {
                   </table>
                 </div>
 
+                {/* Mobile Responsive Cards Stack (md:hidden) */}
+                <div className="md:hidden space-y-3">
+                  {filteredRecords.map((r, index) => {
+                    const isIncome = r.type === 'INCOME';
+                    return (
+                      <div
+                        key={r.id}
+                        className={`p-4 rounded-2xl border transition-all shadow-xs ${
+                          isIncome
+                            ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-200/80 dark:border-emerald-800/50'
+                            : 'bg-rose-50/40 dark:bg-rose-950/20 border-rose-200/80 dark:border-rose-800/50'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="space-y-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold ${
+                                  isIncome
+                                    ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300'
+                                    : 'bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-300'
+                                }`}
+                              >
+                                {isIncome ? '+ Inflow' : '- Outflow'}
+                              </span>
+                              <span className="font-mono text-[11px] text-slate-500">{r.date}</span>
+                              <span className="text-[10px] text-slate-400">#{index + 1}</span>
+                            </div>
+                            <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                              {r.forWhat}
+                            </h4>
+                          </div>
+
+                          {/* Amount */}
+                          <div className="text-right shrink-0">
+                            <span className={`font-mono font-bold text-base ${isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                              {isIncome ? '+' : '-'}₹{Number(r.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Details line */}
+                        <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-800/60 text-xs">
+                          <span className="inline-block px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px] font-medium text-slate-600 dark:text-slate-300 truncate max-w-[160px]">
+                            {r.paymentMethod || '—'}
+                          </span>
+
+                          <div className="flex items-center gap-1">
+                            {r.invoiceAttachment && (
+                              <button
+                                onClick={() => setPreviewAttachment(r.invoiceAttachment!)}
+                                className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/60 rounded-lg transition"
+                                title="View Receipt"
+                              >
+                                <Paperclip className="w-4 h-4" />
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleDuplicateRecord(r)}
+                              className="p-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition"
+                              title="Copy"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleOpenEditForm(r)}
+                              className="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition"
+                              title="Edit"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => setDeletingId(r.id)}
+                              className="p-1.5 text-slate-500 hover:text-rose-600 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-950/60 transition"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {r.specialNotes && (
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 italic pt-1">
+                            {r.specialNotes}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
                 {/* Table Footer Totals with Distinct Gap Above */}
                 <div className="mt-3.5 p-3.5 bg-slate-50/90 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/90 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-xs">
                   <div className="flex items-center gap-4 text-slate-600 dark:text-slate-400 font-medium">
@@ -1031,8 +1122,8 @@ export const PaymentsPage: React.FC = () => {
 
       {/* 6. MODAL: RECORD / EDIT TRANSACTION */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-fade-in overflow-y-auto">
-          <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden my-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs animate-fade-in overflow-y-auto">
+          <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto max-h-[92dvh] flex flex-col">
             <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <h3 className="font-bold text-slate-900 dark:text-white text-base">
                 {editingRecord ? 'Edit Payment' : 'New Payment Entry'}
@@ -1045,7 +1136,7 @@ export const PaymentsPage: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSubmitForm} className="p-4 sm:p-5 space-y-3.5 text-xs">
+            <form onSubmit={handleSubmitForm} className="p-4 sm:p-5 space-y-3.5 text-xs overflow-y-auto flex-1">
               {/* Type Switcher */}
               <div className="grid grid-cols-2 gap-2">
                 <button

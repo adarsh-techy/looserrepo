@@ -516,7 +516,7 @@ export const HealthPage: React.FC = () => {
       </div>
 
       {/* Interactive Breadcrumb Bar with Back Button */}
-      <div className="flex items-center gap-2 p-2.5 px-3.5 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs shadow-xs overflow-x-auto">
+      <div className="flex items-center gap-2 p-2.5 px-3.5 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs shadow-xs overflow-x-auto no-scrollbar scroll-smooth">
         {viewLevel !== 'PERSON' && (
           <button
             onClick={handleBack}
@@ -1389,9 +1389,9 @@ export const HealthPage: React.FC = () => {
       {/* MODAL 1: ADD PERSON MODAL */}
       {/* ========================================================================= */}
       {isAddPersonModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full shadow-2xl overflow-hidden">
-            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl max-w-md w-full shadow-2xl overflow-hidden max-h-[92dvh] flex flex-col my-auto">
+            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950 shrink-0">
               <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
                 <User className="w-4 h-4 text-rose-500" />
                 <span>Add Family Member Profile</span>
@@ -1404,7 +1404,7 @@ export const HealthPage: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleCreatePerson} className="p-5 space-y-4 text-xs">
+            <form onSubmit={handleCreatePerson} className="p-5 space-y-4 text-xs overflow-y-auto flex-1">
               <div>
                 <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Full Name *
@@ -1527,9 +1527,9 @@ export const HealthPage: React.FC = () => {
       {/* MODAL 2: ADD TEST REPORT MODAL */}
       {/* ========================================================================= */}
       {isAddReportModalOpen && selectedOrgan && selectedDepartment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden">
-            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden max-h-[92dvh] flex flex-col my-auto">
+            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950 shrink-0">
               <div>
                 <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
                   <FileText className="w-4 h-4 text-emerald-500" />
@@ -1547,7 +1547,7 @@ export const HealthPage: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleCreateTestReport} className="p-5 space-y-3.5 text-xs">
+            <form onSubmit={handleCreateTestReport} className="p-5 space-y-3.5 text-xs overflow-y-auto flex-1">
               <div>
                 <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Test / Investigation Name *
@@ -1671,9 +1671,9 @@ export const HealthPage: React.FC = () => {
       {/* MODAL 3: ADD DOCTOR CONSULTATION MODAL */}
       {/* ========================================================================= */}
       {isAddDoctorModalOpen && selectedOrgan && selectedDepartment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden">
-            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden max-h-[92dvh] flex flex-col my-auto">
+            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950 shrink-0">
               <div>
                 <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
                   <Stethoscope className="w-4 h-4 text-blue-500" />
@@ -1691,7 +1691,7 @@ export const HealthPage: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleCreateDoctorConsultation} className="p-5 space-y-3.5 text-xs">
+            <form onSubmit={handleCreateDoctorConsultation} className="p-5 space-y-3.5 text-xs overflow-y-auto flex-1">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">

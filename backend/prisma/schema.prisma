@@ -111,6 +111,7 @@ model PasswordVaultItem {
   websiteUrl        String?
   notes             String?
   attachments       String   @default("[]")
+  isPersonal        Boolean  @default(false)
   ownerId           String
   owner             User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   createdAt         DateTime @default(now())

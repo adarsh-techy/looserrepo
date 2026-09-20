@@ -11,6 +11,7 @@ import { FuturePlansPage } from './pages/FuturePlansPage';
 import { FuturePlanDetailPage } from './pages/FuturePlanDetailPage';
 import { DayToDayPage } from './pages/DayToDayPage';
 import { PasswordsPage } from './pages/PasswordsPage';
+import { PersonalPasswordsPage } from './pages/PersonalPasswordsPage';
 import { SecretNotesPage } from './pages/SecretNotesPage';
 import { MySecretNotesPage } from './pages/MySecretNotesPage';
 import { AuditLogPage } from './pages/AuditLogPage';
@@ -94,6 +95,7 @@ export const App: React.FC = () => {
           <Route path="future-plans/:id" element={<PermissionRoute path="/future-plans"><FuturePlanDetailPage /></PermissionRoute>} />
           <Route path="day-to-day" element={<PermissionRoute path="/day-to-day"><DayToDayPage /></PermissionRoute>} />
           <Route path="passwords" element={<PermissionRoute path="/passwords"><PasswordsPage /></PermissionRoute>} />
+          <Route path="personal-passwords" element={<PermissionRoute path="/personal-passwords"><PersonalPasswordsPage /></PermissionRoute>} />
           <Route path="documents" element={<PermissionRoute path="/documents"><DocumentsPage /></PermissionRoute>} />
           <Route path="secret-notes" element={<PermissionRoute path="/secret-notes"><SecretNotesPage /></PermissionRoute>} />
           <Route path="my-secret-notes" element={<PermissionRoute path="/my-secret-notes"><MySecretNotesPage /></PermissionRoute>} />

@@ -327,15 +327,15 @@ export const PasswordsPage: React.FC = () => {
 
       {/* Add / Edit Password Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100">
-            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 backdrop-blur-sm p-3 sm:p-4 animate-fade-in overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl sm:rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100 max-h-[92dvh] flex flex-col my-auto">
+            <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30">
+                <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 shrink-0">
                   <KeyRound className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-slate-900 dark:text-white">
+                  <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white">
                     {editingItem ? 'Edit Encrypted Credential' : 'Save Encrypted Credential'}
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -346,17 +346,14 @@ export const PasswordsPage: React.FC = () => {
                 </div>
               </div>
               <button
-                onClick={() => {
-                  setIsModalOpen(false);
-                  setEditingItem(null);
-                }}
-                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-lg"
+                onClick={() => setIsModalOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="p-6 space-y-4">
+            <form onSubmit={handleSave} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Account / Service Name</label>
                 <input

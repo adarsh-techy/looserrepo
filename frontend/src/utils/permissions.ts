@@ -89,6 +89,14 @@ export const APP_PAGES: AppPageDef[] = [
     description: 'AES-256 encrypted credential password store',
   },
   {
+    key: 'personal-passwords',
+    path: '/personal-passwords',
+    label: 'Personal Passwords',
+    category: 'Security & Vault',
+    description: 'Private encrypted credentials exclusively for Adarsh (AD Only)',
+    adminOnly: true,
+  },
+  {
     key: 'documents',
     path: '/documents',
     label: 'Documents & Cards',
@@ -152,8 +160,8 @@ export function hasPageAccess(
   const normalized = pagePath.startsWith('/') ? pagePath : `/${pagePath}`;
   const baseRoute = `/${normalized.split('/')[1]}`;
 
-  // /users and /health are strictly restricted to Adarsh (AD) and his family — NOT for NS
-  if (baseRoute === '/users' || baseRoute === '/health') {
+  // /users, /health, and /personal-passwords are strictly restricted to Adarsh (AD) — NOT for NS
+  if (baseRoute === '/users' || baseRoute === '/health' || baseRoute === '/personal-passwords') {
     return user.role === 'AD';
   }
 

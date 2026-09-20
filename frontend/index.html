@@ -3,12 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/></svg>" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="format-detection" content="telephone=no" />
     <title>Loosers Vault | Dual-Partner High Security Enclave</title>
     <meta name="description" content="Secure dual-partner web vault for business knowledge, passwords, reminders, and secret notes with emergency access & siren alerts." />
   </head>
-  <body class="bg-slate-950 text-slate-100 min-h-screen">
-    <div id="root"></div>
+  <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-[100dvh] overflow-x-hidden antialiased">
+    <div id="root" class="min-h-[100dvh] w-full"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

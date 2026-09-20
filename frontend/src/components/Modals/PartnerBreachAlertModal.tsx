@@ -98,9 +98,9 @@ export const PartnerBreachAlertModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-2xl animate-fade-in select-none">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-2xl animate-fade-in select-none overflow-y-auto">
       {/* Repeatedly blinking / pulsing alert card in center of screen */}
-      <div className="bg-slate-950 border-2 border-red-500 rounded-3xl p-6 sm:p-7 max-w-lg w-full shadow-[0_0_60px_rgba(239,68,68,0.45)] space-y-5 text-center text-white relative overflow-hidden animate-pulse ring-4 ring-red-500/30 my-auto">
+      <div className="bg-slate-950 border-2 border-red-500 rounded-3xl p-5 sm:p-7 max-w-lg w-full max-h-[92dvh] overflow-y-auto shadow-[0_0_60px_rgba(239,68,68,0.45)] space-y-5 text-center text-white relative animate-pulse ring-4 ring-red-500/30 my-auto">
         {/* Ambient Red Alert Glow */}
         <div className="absolute -top-24 -left-24 w-52 h-52 bg-red-600/30 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-24 w-52 h-52 bg-rose-600/30 rounded-full blur-3xl pointer-events-none" />

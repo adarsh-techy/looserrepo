@@ -1227,7 +1227,10 @@ export const WorkFormPage: React.FC = () => {
       </div>
 
       {/* Bottom Sticky Action Bar */}
-      <div className="sticky bottom-16 md:bottom-4 z-20 p-3 sm:p-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div
+        className="sticky md:bottom-4 z-20 p-3 sm:p-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-3"
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 4.25rem)' }}
+      >
         <button
           type="button"
           onClick={() => navigate('/works')}
