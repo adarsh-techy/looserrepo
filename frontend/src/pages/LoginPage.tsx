@@ -59,7 +59,7 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* Left Side: 50% Screen on Desktop, Exactly Half-Screen (50vh) on Mobile */}
-      <div className="relative w-full md:w-1/2 h-[50vh] md:h-screen md:min-h-screen bg-slate-950 overflow-hidden shrink-0">
+      <div className="relative w-full md:w-1/2 h-[50vh] md:h-screen md:min-h-screen bg-slate-950 overflow-hidden shrink-0 shadow-[0_16px_32px_-4px_rgba(255,255,255,0.75)] z-10">
         <img
           src={logoImg}
           alt="Loosers"
@@ -67,6 +67,9 @@ export const LoginPage: React.FC = () => {
         />
         {/* Subtle cinematic gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-black/10 pointer-events-none" />
+
+        {/* White Shadow / Luminous Fade at the end of the image on mobile */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-24 md:hidden bg-gradient-to-t from-white/90 via-white/40 to-transparent pointer-events-none" />
       </div>
 
       {/* Right Side: Form Column (min-h-[50vh] on mobile, 100vh on desktop) */}
