@@ -61,9 +61,8 @@ export const Header: React.FC = () => {
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="md:hidden flex items-center gap-1 font-black text-xs sm:text-sm tracking-tight text-slate-900 dark:text-white truncate">
+        <div className="md:hidden flex items-center font-black text-xs sm:text-sm tracking-tight text-slate-900 dark:text-white truncate">
           <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Loosers</span>
-          <span className="text-[9px] px-1 py-0.2 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 font-mono font-medium border border-blue-500/20">Vault</span>
         </div>
       </div>
 
