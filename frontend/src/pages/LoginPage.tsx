@@ -6,6 +6,7 @@ import { setAuthSuccess } from '../store/slices/authSlice';
 import { toggleTheme, showToast } from '../store/slices/uiSlice';
 import { api } from '../services/api';
 import { ShieldCheck, Lock, Mail, KeyRound, Loader2, ArrowRight, Sun, Moon } from 'lucide-react';
+import logoImg from '../assets/a.png';
 
 export const LoginPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -65,8 +66,12 @@ export const LoginPage: React.FC = () => {
       <div className="w-full max-w-sm sm:max-w-md bg-white dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-2xl backdrop-blur-xl relative z-10 space-y-5 sm:space-y-6 transition-all duration-200 my-auto">
         {/* Header */}
         <div className="text-center space-y-1.5 sm:space-y-2">
-          <div className="inline-flex p-2.5 sm:p-3.5 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-xl shadow-blue-500/20 mb-1">
-            <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8" />
+          <div className="flex justify-center mb-1">
+            <img
+              src={logoImg}
+              alt="Loosers Vault Logo"
+              className="h-16 sm:h-20 w-auto max-w-[240px] object-contain rounded-2xl drop-shadow-md transition-transform hover:scale-105"
+            />
           </div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Loosers Secure Vault</h1>
           <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 px-2 leading-relaxed">
