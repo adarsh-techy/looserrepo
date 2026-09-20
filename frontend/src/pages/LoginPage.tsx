@@ -59,8 +59,8 @@ export const LoginPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Left Side: Full-Screen on Desktop, Sleek Hero Banner on Mobile */}
-      <div className="relative w-full md:w-1/2 h-48 sm:h-64 md:h-screen md:min-h-screen bg-slate-950 overflow-hidden shrink-0">
+      {/* Left Side: 50% Screen on Desktop, Exactly Half-Screen (50vh) on Mobile */}
+      <div className="relative w-full md:w-1/2 h-[50vh] md:h-screen md:min-h-screen bg-slate-950 overflow-hidden shrink-0">
         <img
           src={logoImg}
           alt="Loosers"
@@ -77,16 +77,16 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="absolute bottom-6 left-6 right-6 z-10 hidden md:flex items-center justify-between">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/75 backdrop-blur-md border border-white/15 text-xs font-medium text-white shadow-xl">
-            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 z-10 flex items-center justify-between">
+          <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-slate-950/75 backdrop-blur-md border border-white/15 text-[10px] sm:text-xs font-medium text-white shadow-xl">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
             <span>AES-256-GCM Envelope Encryption</span>
           </div>
         </div>
       </div>
 
-      {/* Right Side: Form Column */}
-      <div className="w-full md:w-1/2 min-h-[calc(100vh-12rem)] md:min-h-screen flex flex-col justify-center items-center px-5 py-6 sm:px-12 lg:px-16 relative bg-white dark:bg-slate-950 transition-colors duration-200">
+      {/* Right Side: Form Column (min-h-[50vh] on mobile, 100vh on desktop) */}
+      <div className="w-full md:w-1/2 min-h-[50vh] md:min-h-screen flex flex-col justify-center items-center px-5 py-8 sm:px-12 lg:px-16 relative bg-white dark:bg-slate-950 transition-colors duration-200">
         {/* Centered Form Container */}
         <div className="w-full max-w-sm sm:max-w-md space-y-5 sm:space-y-6 my-auto py-4 sm:py-8">
           <div className="space-y-1 sm:space-y-2">
