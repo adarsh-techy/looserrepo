@@ -12,14 +12,18 @@ export async function getVaultItems(req: AuthenticatedRequest, res: Response) {
   const { search, isPersonal } = req.query;
   const isPersonalQuery = isPersonal === 'true';
 
-  // Strictly enforce that only role AD can view personal passwords
-  if (isPersonalQuery && req.user?.role !== 'AD') {
-    return res.status(403).json({ error: 'Access denied: Personal Passwords Vault is strictly restricted to Adarsh (AD).' });
+  if (isPersonalQuery) {
+    const perms = (req.user as any)?.pagePermissions || [];
+    const hasPerm = req.user?.role === 'AD' || perms.includes('*') || perms.includes('/personal-passwords');
+    if (!hasPerm) {
+      return res.status(403).json({ error: 'Access denied: You do not have permission for Personal Passwords.' });
+    }
   }
 
   let items = await prisma.passwordVaultItem.findMany({
     where: {
       isPersonal: isPersonalQuery,
+      ...(isPersonalQuery ? { ownerId: req.user?.id } : {}),
     },
     include: {
       owner: { select: { id: true, name: true, email: true } },
@@ -60,8 +64,12 @@ export async function createVaultItem(req: AuthenticatedRequest, res: Response) 
   const userId = req.user?.id!;
   const isPersonalFlag = Boolean(isPersonal);
 
-  if (isPersonalFlag && req.user?.role !== 'AD') {
-    return res.status(403).json({ error: 'Access denied: Only Adarsh (AD) can create Personal Passwords.' });
+  if (isPersonalFlag) {
+    const perms = (req.user as any)?.pagePermissions || [];
+    const hasPerm = req.user?.role === 'AD' || perms.includes('*') || perms.includes('/personal-passwords');
+    if (!hasPerm) {
+      return res.status(403).json({ error: 'Access denied: You do not have permission to create Personal Passwords.' });
+    }
   }
 
   if (!accountName || !usernameOrEmail || !password) {
@@ -129,8 +137,11 @@ export async function revealVaultPassword(req: AuthenticatedRequest, res: Respon
 
   if (!item) return res.status(404).json({ error: 'Vault credential not found' });
 
-  if (item.isPersonal && req.user?.role !== 'AD') {
-    return res.status(403).json({ error: 'Access denied: Personal credential restricted to Adarsh (AD).' });
+  if (item.isPersonal) {
+    const isOwner = item.ownerId === req.user?.id;
+    if (!isOwner && req.user?.role !== 'AD') {
+      return res.status(403).json({ error: 'Access denied: Personal credential restricted to owner.' });
+    }
   }
 
   try {
@@ -175,8 +186,11 @@ export async function updateVaultItem(req: AuthenticatedRequest, res: Response) 
   const existing = await prisma.passwordVaultItem.findUnique({ where: { id } });
   if (!existing) return res.status(404).json({ error: 'Vault item not found' });
 
-  if (existing.isPersonal && req.user?.role !== 'AD') {
-    return res.status(403).json({ error: 'Access denied: Personal credential restricted to Adarsh (AD).' });
+  if (existing.isPersonal) {
+    const isOwner = existing.ownerId === req.user?.id;
+    if (!isOwner && req.user?.role !== 'AD') {
+      return res.status(403).json({ error: 'Access denied: Personal credential restricted to owner.' });
+    }
   }
 
   let updateData: any = {
@@ -257,8 +271,11 @@ export async function deleteVaultItem(req: AuthenticatedRequest, res: Response) 
   const existing = await prisma.passwordVaultItem.findUnique({ where: { id } });
   if (!existing) return res.status(404).json({ error: 'Vault item not found' });
 
-  if (existing.isPersonal && req.user?.role !== 'AD') {
-    return res.status(403).json({ error: 'Access denied: Personal credential restricted to Adarsh (AD).' });
+  if (existing.isPersonal) {
+    const isOwner = existing.ownerId === req.user?.id;
+    if (!isOwner && req.user?.role !== 'AD') {
+      return res.status(403).json({ error: 'Access denied: Personal credential restricted to owner.' });
+    }
   }
 
   // Move snapshot to Trash

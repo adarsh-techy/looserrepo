@@ -16,11 +16,13 @@ const router = Router();
 
 router.use(requireAuth);
 
-// Access Restriction: Exclusively for Adarsh (AD) and family, not for NS
+// Access Restriction: AD or users with /health permission
 router.use((req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  if (req.user?.role !== 'AD') {
+  const perms = (req.user as any)?.pagePermissions || [];
+  const hasAccess = req.user?.role === 'AD' || perms.includes('*') || perms.includes('/health');
+  if (!hasAccess) {
     return res.status(403).json({
-      error: 'Access Denied: Health & Medical Vault is strictly private to Adarsh and family.',
+      error: 'Access Denied: You do not have permission to access Health & Medical Vault.',
     });
   }
   next();

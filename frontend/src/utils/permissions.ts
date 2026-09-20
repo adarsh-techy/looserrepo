@@ -45,7 +45,6 @@ export const APP_PAGES: AppPageDef[] = [
     label: 'Adarsh Family Health',
     category: 'Workspace',
     description: 'Adarsh family personal medical records, diagnostics & physician consultations',
-    adminOnly: true,
   },
 
   // 2. Finance & Accounts
@@ -93,8 +92,7 @@ export const APP_PAGES: AppPageDef[] = [
     path: '/personal-passwords',
     label: 'Personal Passwords',
     category: 'Security & Vault',
-    description: 'Private encrypted credentials exclusively for Adarsh (AD Only)',
-    adminOnly: true,
+    description: 'Private encrypted credentials vault',
   },
   {
     key: 'documents',
@@ -139,7 +137,6 @@ export const APP_PAGES: AppPageDef[] = [
     label: 'Users & Access',
     category: 'System & Audit',
     description: 'User accounts & page permissions control',
-    adminOnly: true,
   },
 ];
 
@@ -160,11 +157,6 @@ export function hasPageAccess(
   const normalized = pagePath.startsWith('/') ? pagePath : `/${pagePath}`;
   const baseRoute = `/${normalized.split('/')[1]}`;
 
-  // /users, /health, and /personal-passwords are strictly restricted to Adarsh (AD) — NOT for NS
-  if (baseRoute === '/users' || baseRoute === '/health' || baseRoute === '/personal-passwords') {
-    return user.role === 'AD';
-  }
-
   const matched = APP_PAGES.find(
     (p) => p.path === normalized || `/${p.key}` === normalized || p.path === baseRoute
   );
@@ -182,7 +174,7 @@ export function getDefaultAccessibleRoute(user: User | null | undefined): string
   if (user.role === 'AD') return '/works';
 
   for (const page of APP_PAGES) {
-    if (!page.adminOnly && hasPageAccess(user, page.path)) {
+    if (hasPageAccess(user, page.path)) {
       return page.path;
     }
   }

@@ -107,7 +107,7 @@ export const UsersPage: React.FC = () => {
   const [newUserPassword, setNewUserPassword] = useState('');
   const [newUserRole, setNewUserRole] = useState<'NS' | 'AD'>('NS');
   const [newUserPerms, setNewUserPerms] = useState<string[]>(
-    APP_PAGES.filter((p) => !p.adminOnly).map((p) => p.path)
+    APP_PAGES.map((p) => p.path)
   );
   const [isCreatingUser, setIsCreatingUser] = useState(false);
 
@@ -221,7 +221,7 @@ export const UsersPage: React.FC = () => {
     setSelectedUserForPerms(userToEdit);
     const existingPerms = userToEdit.pagePermissions || [];
     if (userToEdit.role === 'AD' || existingPerms.includes('*')) {
-      setSelectedPerms(APP_PAGES.filter((p) => !p.adminOnly).map((p) => p.path));
+      setSelectedPerms(APP_PAGES.map((p) => p.path));
     } else {
       setSelectedPerms([...existingPerms]);
     }
@@ -237,7 +237,7 @@ export const UsersPage: React.FC = () => {
   };
 
   const handleSelectAllPerms = () => {
-    setSelectedPerms(APP_PAGES.filter((p) => !p.adminOnly).map((p) => p.path));
+    setSelectedPerms(APP_PAGES.map((p) => p.path));
   };
 
   const handleDeselectAllPerms = () => {
@@ -308,7 +308,7 @@ export const UsersPage: React.FC = () => {
       setNewUserEmail('');
       setNewUserPassword('');
       setNewUserRole('NS');
-      setNewUserPerms(APP_PAGES.filter((p) => !p.adminOnly).map((p) => p.path));
+      setNewUserPerms(APP_PAGES.map((p) => p.path));
       loadUsers();
     } catch (err: any) {
       dispatch(showToast({ message: err.message || 'Failed to create user', type: 'error' }));
@@ -471,7 +471,7 @@ export const UsersPage: React.FC = () => {
               const userIsAD = u.role === 'AD';
               const perms = u.pagePermissions || [];
               const hasAllAccess = userIsAD || perms.includes('*');
-              const totalPermittable = APP_PAGES.filter((p) => !p.adminOnly).length;
+              const totalPermittable = APP_PAGES.length;
               const allowedCount = hasAllAccess ? totalPermittable : perms.length;
 
               return (
@@ -676,7 +676,7 @@ export const UsersPage: React.FC = () => {
                 {/* Categorized Switchboard Cards */}
                 <div className="space-y-4 overflow-y-auto flex-1 pr-1">
                   {categories.map((cat) => {
-                    const catPages = APP_PAGES.filter((p) => p.category === cat && !p.adminOnly);
+                    const catPages = APP_PAGES.filter((p) => p.category === cat);
                     if (catPages.length === 0) return null;
 
                     return (
