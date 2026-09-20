@@ -5,7 +5,6 @@ import { RootState, AppDispatch } from './store';
 import { fetchProfile, logout } from './store/slices/authSlice';
 import { MainLayout } from './components/Layout/MainLayout';
 import { LoginPage } from './pages/LoginPage';
-import { RegisterPage } from './pages/RegisterPage';
 import { BusinessPage } from './pages/BusinessPage';
 import { BusinessDetailPage } from './pages/BusinessDetailPage';
 import { FuturePlansPage } from './pages/FuturePlansPage';
@@ -71,7 +70,7 @@ export const App: React.FC = () => {
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
         <Route path="/login" element={!token ? <LoginPage /> : <Navigate to={defaultRoute} replace />} />
-        <Route path="/register" element={!token ? <RegisterPage /> : <Navigate to={defaultRoute} replace />} />
+        <Route path="/register" element={<Navigate to="/login" replace />} />
 
         <Route
           path="/"

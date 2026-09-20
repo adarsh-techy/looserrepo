@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
 import { setAuthSuccess } from '../store/slices/authSlice';
@@ -145,13 +144,6 @@ export const LoginPage: React.FC = () => {
               {requires2FA ? 'Verify 2FA & Access Vault' : 'Sign In to Secure Enclave'}
             </button>
           </form>
-
-          <div className="pt-2 text-center text-xs text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800">
-            Don't have a partner account?{' '}
-            <Link to="/register" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-              Register here
-            </Link>
-          </div>
         </div>
       </div>
     </div>
