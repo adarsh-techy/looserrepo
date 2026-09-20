@@ -63,7 +63,7 @@ export const LoginPage: React.FC = () => {
         <img
           src={logoImg}
           alt="Loosers"
-          className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
+          className="w-full h-full object-cover object-left transition-transform duration-700 hover:scale-105"
         />
         {/* Subtle cinematic gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-black/10 pointer-events-none" />
