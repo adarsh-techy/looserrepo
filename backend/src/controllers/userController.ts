@@ -328,6 +328,48 @@ export async function deleteUser(req: AuthenticatedRequest, res: Response) {
   }
 }
 
+export async function adminResetUserPassword(req: AuthenticatedRequest, res: Response) {
+  try {
+    const actor = req.user;
+    if (!actor || actor.role !== 'AD') {
+      return res.status(403).json({ error: 'Unauthorized: Only role AD can reset passwords' });
+    }
+
+    const { id } = req.params;
+    const { newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+    }
+
+    const targetUser = await prisma.user.findUnique({ where: { id } });
+    if (!targetUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await prisma.user.update({
+      where: { id },
+      data: { passwordHash },
+    });
+
+    await logAuditEvent({
+      eventType: 'USER_PASSWORD_RESET_BY_ADMIN',
+      severity: 'WARNING',
+      actorId: actor.id,
+      actorEmail: actor.email,
+      targetType: 'User',
+      targetId: id,
+      metadata: { targetEmail: targetUser.email, targetName: targetUser.name },
+    });
+
+    return res.json({ success: true, message: `Password for ${targetUser.name} has been updated.` });
+  } catch (error: any) {
+    console.error('[adminResetUserPassword] Error:', error);
+    return res.status(500).json({ error: error.message || 'Failed to reset password' });
+  }
+}
+
 export async function getPartnerStatus(req: AuthenticatedRequest, res: Response) {
   try {
     const userId = req.user?.id;
