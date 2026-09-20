@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from '../store';
 import { setAuthSuccess } from '../store/slices/authSlice';
 import { toggleTheme, showToast } from '../store/slices/uiSlice';
 import { api } from '../services/api';
-import { ShieldCheck, Lock, Mail, KeyRound, Loader2, ArrowRight, Sun, Moon } from 'lucide-react';
+import { Lock, Mail, KeyRound, Loader2, ArrowRight, Sun, Moon } from 'lucide-react';
 import logoImg from '../assets/a.png';
 
 export const LoginPage: React.FC = () => {
@@ -67,22 +67,7 @@ export const LoginPage: React.FC = () => {
           className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
         />
         {/* Subtle cinematic gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-black/20 pointer-events-none" />
-
-        {/* Floating Brand Badge on the Image */}
-        <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-10">
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-slate-950/70 backdrop-blur-md border border-white/15 text-[11px] sm:text-xs font-semibold text-white shadow-xl">
-            <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400" />
-            <span>Loosers Secure Enclave</span>
-          </div>
-        </div>
-
-        <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 z-10 flex items-center justify-between">
-          <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-slate-950/75 backdrop-blur-md border border-white/15 text-[10px] sm:text-xs font-medium text-white shadow-xl">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span>AES-256-GCM Envelope Encryption</span>
-          </div>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-black/10 pointer-events-none" />
       </div>
 
       {/* Right Side: Form Column (min-h-[50vh] on mobile, 100vh on desktop) */}
@@ -166,11 +151,6 @@ export const LoginPage: React.FC = () => {
             <Link to="/register" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
               Register here
             </Link>
-          </div>
-
-          <div className="pt-1 text-center text-[11px] text-slate-500 flex items-center justify-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-            <span>AES-256-GCM Envelope Encryption</span>
           </div>
         </div>
       </div>
