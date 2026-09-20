@@ -65,39 +65,22 @@ export const LoginPage: React.FC = () => {
 
       {/* Main Card: Left Image + Right Form */}
       <div className="w-full max-w-4xl bg-white dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl backdrop-blur-xl relative z-10 overflow-hidden my-auto grid grid-cols-1 md:grid-cols-2">
-        {/* Left Side: Brand Image Presentation */}
-        <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 p-6 sm:p-10 flex flex-col justify-between items-center text-center relative overflow-hidden min-h-[260px] md:min-h-[540px]">
-          {/* Subtle Ambient Highlights */}
-          <div className="absolute -top-20 -left-20 w-56 h-56 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-20 -right-20 w-56 h-56 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+        {/* Left Side: Full Size Edge-to-Edge Image */}
+        <div className="relative w-full h-56 sm:h-72 md:h-auto min-h-[240px] md:min-h-[560px] overflow-hidden bg-slate-950">
+          <img
+            src={logoImg}
+            alt="Loosers"
+            className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
+          />
+          {/* Subtle cinematic gradient vignette */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/10 pointer-events-none" />
 
-          {/* Top Brand Pill */}
-          <div className="relative z-10 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-semibold text-blue-200 backdrop-blur-sm shadow-sm">
-            <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
-            <span>Dual-Partner Secure Enclave</span>
-          </div>
-
-          {/* Central Logo & Image Showcase */}
-          <div className="relative z-10 my-auto py-4 sm:py-6 flex flex-col items-center justify-center space-y-4">
-            <div className="p-3 sm:p-4 bg-white/10 dark:bg-white/5 backdrop-blur-md rounded-2xl border border-white/15 shadow-2xl max-w-[240px] sm:max-w-[300px] transition-transform hover:scale-[1.02] duration-300">
-              <img
-                src={logoImg}
-                alt="Loosers"
-                className="w-full h-auto max-h-48 sm:max-h-56 object-contain rounded-xl drop-shadow-2xl"
-              />
+          {/* Bottom Security Badge */}
+          <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/75 backdrop-blur-md border border-white/15 text-[11px] font-medium text-white shadow-lg">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>AES-256-GCM Secure Enclave</span>
             </div>
-            <div className="space-y-1">
-              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">Loosers</h2>
-              <p className="text-xs text-blue-200/80 font-medium max-w-xs mx-auto leading-relaxed">
-                Dual-Partner High-Security Business, Passwords & Emergency Vault
-              </p>
-            </div>
-          </div>
-
-          {/* Bottom Security Assurance */}
-          <div className="relative z-10 mt-auto pt-3 flex items-center justify-center gap-1.5 text-[11px] text-blue-300/80 border-t border-white/10 w-full">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span>AES-256-GCM Envelope Encryption</span>
           </div>
         </div>
 
