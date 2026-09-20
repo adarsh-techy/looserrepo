@@ -12,7 +12,10 @@ export function initializeSocket(httpServer: HttpServer) {
       origin: (origin, callback) => {
         if (!origin) return callback(null, true);
         const normalized = origin.replace(/\/$/, '');
-        if (config.nodeEnv === 'development' && (normalized.startsWith('http://localhost:') || normalized.startsWith('http://127.0.0.1:'))) {
+        if (normalized.startsWith('http://localhost:') || normalized.startsWith('http://127.0.0.1:')) {
+          return callback(null, true);
+        }
+        if (normalized.endsWith('.vercel.app')) {
           return callback(null, true);
         }
         const isAllowed = config.corsOrigin.some((allowed) => {
@@ -20,7 +23,7 @@ export function initializeSocket(httpServer: HttpServer) {
           return normAllowed === '*' || normAllowed === normalized;
         });
         if (isAllowed) return callback(null, true);
-        return callback(new Error(`Socket CORS: Origin ${origin} not allowed`));
+        return callback(null, true);
       },
       credentials: true,
     },
