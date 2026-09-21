@@ -253,7 +253,7 @@ export const EmergencyUnlockWizard: React.FC<Props> = ({ note, onClose }) => {
                 </div>
                 <p>
                   Owner Last Checked In: <strong className="text-slate-900 dark:text-white">{new Date(note.ownerLastCheckInAt).toLocaleString()}</strong> ({note.hoursSinceOwnerCheckIn}h ago).
-                  Configured waiting period is <strong className="text-slate-900 dark:text-white">{note.waitingPeriodHours} hours</strong>.
+                  Configured waiting period is <strong className="text-slate-900 dark:text-white">{note.waitingPeriodHours && note.waitingPeriodHours > 0 ? `${note.waitingPeriodHours} hours` : 'Instant (No Waiting)'}</strong>.
                 </p>
                 <p>
                   Initiating this request immediately notifies the owner across all active sessions with a red siren alert and records an immutable audit log entry.

@@ -111,7 +111,6 @@ export const SecretNotesPage: React.FC = () => {
   const [attachments, setAttachments] = useState<NoteAttachment[]>([]);
   const [notePassword, setNotePassword] = useState('');
   const [hint, setHint] = useState('');
-  const [waitingPeriodHours, setWaitingPeriodHours] = useState('48');
 
   useEffect(() => {
     dispatch(fetchSecretNotes());
@@ -342,7 +341,6 @@ export const SecretNotesPage: React.FC = () => {
     setAttachments([]);
     setNotePassword('');
     setHint('');
-    setWaitingPeriodHours(cat === 'POST_DEATH' ? '72' : '48');
     setIsCreateModalOpen(true);
   };
 
@@ -367,7 +365,7 @@ export const SecretNotesPage: React.FC = () => {
           notePassword,
           hint: hint || undefined,
           designatedRecipientId: partnerStatus.partner.id,
-          waitingPeriodHours: parseInt(waitingPeriodHours, 10),
+          waitingPeriodHours: 0,
         })
       ).unwrap();
 
@@ -552,8 +550,12 @@ export const SecretNotesPage: React.FC = () => {
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
-                        <span>Configured Waiting Period:</span>
-                        <strong className="text-slate-900 dark:text-slate-200 font-mono">{note.waitingPeriodHours} hours</strong>
+                        <span>Release Access:</span>
+                        <strong className="text-slate-900 dark:text-slate-200 font-mono">
+                          {note.waitingPeriodHours && note.waitingPeriodHours > 0
+                            ? `${note.waitingPeriodHours} hours`
+                            : 'Instant (No Waiting)'}
+                        </strong>
                       </div>
                     </div>
 
@@ -1040,36 +1042,6 @@ export const SecretNotesPage: React.FC = () => {
                   placeholder="e.g. Sealed envelope in estate safe"
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none"
                 />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1 flex items-center justify-between">
-                  <span>Waiting Period Before Release</span>
-                  <span className="text-[11px] font-mono text-red-600 dark:text-red-400 font-bold">
-                    {waitingPeriodHours === '168' ? '7 Days (168h)' : `${waitingPeriodHours} Hours`}
-                  </span>
-                </label>
-                <div className="grid grid-cols-4 gap-2">
-                  {[
-                    { label: '24h', value: '24' },
-                    { label: '48h', value: '48' },
-                    { label: '72h', value: '72' },
-                    { label: '7 Days', value: '168' },
-                  ].map((item) => (
-                    <button
-                      key={item.value}
-                      type="button"
-                      onClick={() => setWaitingPeriodHours(item.value)}
-                      className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all active:scale-95 ${
-                        waitingPeriodHours === item.value
-                          ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-600/25'
-                          : 'bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-red-400 hover:bg-white dark:hover:bg-slate-900'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               {/* Confidential Image & Document Uploads */}

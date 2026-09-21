@@ -196,7 +196,7 @@ export async function createSecretNote(req: AuthenticatedRequest, res: Response)
       recoveryQuestions: storedQuestions.length > 0 ? JSON.stringify(storedQuestions) : '[]',
       ownerId,
       designatedRecipientId: targetRecipientId,
-      waitingPeriodHours: waitingPeriodHours ? parseInt(waitingPeriodHours, 10) : 48,
+      waitingPeriodHours: waitingPeriodHours !== undefined && waitingPeriodHours !== null ? parseInt(waitingPeriodHours, 10) : 0,
       ownerLastCheckInAt: new Date(),
       status: 'ACTIVE',
     },

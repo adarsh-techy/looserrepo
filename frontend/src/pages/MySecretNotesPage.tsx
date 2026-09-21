@@ -30,6 +30,11 @@ import {
   RotateCcw,
   Sparkles,
   CheckCircle2,
+  Check,
+  Zap,
+  ArrowRight,
+  HeartHandshake,
+  ShieldAlert,
 } from 'lucide-react';
 import {
   AttachmentUploader,
@@ -74,6 +79,7 @@ export const MySecretNotesPage: React.FC = () => {
 
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<'ALL' | 'PRIVATE_EMERGENCY' | 'POST_DEATH'>('ALL');
+  const [isCategoryChoiceModalOpen, setIsCategoryChoiceModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Decrypt Modal State
@@ -101,9 +107,20 @@ export const MySecretNotesPage: React.FC = () => {
   const [notePassword, setNotePassword] = useState('');
   const [hint, setHint] = useState('');
   const [questions, setQuestions] = useState<QuestionConfig[]>(DEFAULT_QUESTIONS);
-  const [waitingPeriodHours, setWaitingPeriodHours] = useState('48');
   const [showCreatePassword, setShowCreatePassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const getPasswordStrength = (pwd: string) => {
+    if (!pwd) return { label: 'Not set', color: 'text-slate-400', percent: 'w-0', barColor: 'bg-slate-300' };
+    if (pwd.length < 4) return { label: 'Too short (min 4 chars)', color: 'text-red-500', percent: 'w-1/4', barColor: 'bg-red-500' };
+    if (pwd.length < 8) return { label: 'Good', color: 'text-amber-500', percent: 'w-2/4', barColor: 'bg-amber-500' };
+    const hasSpecial = /[^A-Za-z0-9]/.test(pwd);
+    const hasNum = /[0-9]/.test(pwd);
+    if (pwd.length >= 8 && (hasSpecial || hasNum)) {
+      return { label: 'Strong Security', color: 'text-emerald-500', percent: 'w-full', barColor: 'bg-emerald-500' };
+    }
+    return { label: 'Medium', color: 'text-blue-500', percent: 'w-3/4', barColor: 'bg-blue-500' };
+  };
 
   useEffect(() => {
     dispatch(fetchSecretNotes());
@@ -121,6 +138,15 @@ export const MySecretNotesPage: React.FC = () => {
     return matchesCategory && matchesSearch;
   });
 
+  const handleOpenCategoryChoice = () => {
+    setIsCategoryChoiceModalOpen(true);
+  };
+
+  const handleSelectCategoryAndOpenCreate = (cat: 'PRIVATE_EMERGENCY' | 'POST_DEATH') => {
+    setIsCategoryChoiceModalOpen(false);
+    handleOpenCreateModal(cat);
+  };
+
   const handleOpenCreateModal = (cat?: 'PRIVATE_EMERGENCY' | 'POST_DEATH') => {
     setCategory(cat || 'PRIVATE_EMERGENCY');
     setTitle('');
@@ -133,7 +159,6 @@ export const MySecretNotesPage: React.FC = () => {
       { id: 2, preset: PRESET_SECURITY_QUESTIONS[1], customText: '', answer: '' },
       { id: 3, preset: PRESET_SECURITY_QUESTIONS[2], customText: '', answer: '' },
     ]);
-    setWaitingPeriodHours(cat === 'POST_DEATH' ? '72' : '48');
     setIsCreateModalOpen(true);
   };
 
@@ -191,7 +216,7 @@ export const MySecretNotesPage: React.FC = () => {
         notePassword,
         hint: hint.trim() || undefined,
         designatedRecipientId: partnerStatus?.partner?.id || undefined,
-        waitingPeriodHours: parseInt(waitingPeriodHours, 10) || 48,
+        waitingPeriodHours: 0,
         recoveryQuestions: formattedQuestions,
         recoveryQuestion: formattedQuestions[0]?.question,
         recoveryAnswer: formattedQuestions[0]?.answer,
@@ -199,7 +224,7 @@ export const MySecretNotesPage: React.FC = () => {
 
       dispatch(
         showToast({
-          message: `Secret note created & protected with ${formattedQuestions.length} recovery questions!`,
+          message: `Secret note encrypted & uploaded immediately for Partner ${partnerRole}!`,
           type: 'success',
         })
       );
@@ -361,8 +386,8 @@ export const MySecretNotesPage: React.FC = () => {
         </div>
 
         <button
-          onClick={() => handleOpenCreateModal()}
-          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition self-start sm:self-auto active:scale-95"
+          onClick={() => handleOpenCategoryChoice()}
+          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition self-start sm:self-auto active:scale-95 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>New Secret Note for Partner {partnerRole}</span>
@@ -433,8 +458,8 @@ export const MySecretNotesPage: React.FC = () => {
             Create an encrypted directive, succession keys, or emergency instructions for Partner {partnerRole}.
           </p>
           <button
-            onClick={() => handleOpenCreateModal()}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow"
+            onClick={() => handleOpenCategoryChoice()}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow cursor-pointer transition active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>Create First Note for Partner {partnerRole}</span>
@@ -497,11 +522,13 @@ export const MySecretNotesPage: React.FC = () => {
 
                     <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
                       <span className="flex items-center gap-1.5">
-                        <Clock className="w-4 h-4 text-amber-500" />
-                        <span>Waiting Period:</span>
+                        <Clock className="w-4 h-4 text-emerald-500" />
+                        <span>Release Access:</span>
                       </span>
-                      <strong className="text-slate-900 dark:text-slate-200 font-mono">
-                        {note.waitingPeriodHours} hours
+                      <strong className="text-slate-900 dark:text-slate-200 font-mono text-xs">
+                        {note.waitingPeriodHours && note.waitingPeriodHours > 0
+                          ? `${note.waitingPeriodHours} hours`
+                          : 'Instant (No Waiting)'}
                       </strong>
                     </div>
 
@@ -857,72 +884,293 @@ export const MySecretNotesPage: React.FC = () => {
         </div>
       )}
 
-      {/* Create Note Modal with 3 Recovery Questions (Wide & Beautiful Layout) */}
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 dark:bg-black/85 backdrop-blur-md p-3 sm:p-5 animate-fade-in overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100 max-h-[92vh] flex flex-col my-auto transition-all">
-            {/* Modal Header */}
-            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0 bg-gradient-to-r from-indigo-50/50 via-white to-purple-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/20">
-              <div className="flex items-center gap-3.5">
-                <div className="p-3 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 ring-4 ring-indigo-50 dark:ring-indigo-950/50">
-                  <FileKey className="w-6 h-6" />
+      {/* Modal Step 1: Choose Note Category First */}
+      {isCategoryChoiceModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 dark:bg-black/90 backdrop-blur-md p-4 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100 transition-all animate-scale-up">
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 text-white">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
+                  <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-extrabold text-lg sm:text-xl text-slate-900 dark:text-white">
-                      Create Secret Note for Partner {partnerRole}
-                    </h3>
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 uppercase tracking-wide">
-                      {currentRole} ➔ {partnerRole}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    AES-256-GCM encrypted directives protected with 3 recovery questions
+                  <h3 className="font-extrabold text-lg text-white">
+                    Choose Note Category
+                  </h3>
+                  <p className="text-xs text-indigo-100">
+                    Select note purpose for Partner {partnerRole} ({partnerDisplayName})
                   </p>
                 </div>
               </div>
               <button
-                onClick={() => setIsCreateModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                type="button"
+                onClick={() => setIsCategoryChoiceModalOpen(false)}
+                className="text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/15 transition cursor-pointer"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
+            {/* Category Cards */}
+            <div className="p-6 space-y-4">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                Please select which category of note you want to create:
+              </p>
+
+              <div className="grid grid-cols-1 gap-4">
+                {/* 1. Private and Emergency Notes */}
+                <button
+                  type="button"
+                  onClick={() => handleSelectCategoryAndOpenCreate('PRIVATE_EMERGENCY')}
+                  className="w-full text-left p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-500 bg-slate-50/70 dark:bg-slate-950/60 hover:bg-amber-50/40 dark:hover:bg-amber-950/20 transition-all duration-200 group relative shadow-xs hover:shadow-md cursor-pointer active:scale-[0.99]"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3.5 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-colors duration-200 shrink-0">
+                        <ShieldAlert className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                            1. Private and Emergency Notes
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border border-amber-300/60 dark:border-amber-700/60">
+                            Urgent Directives
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                          Sensitive emergency records, passwords, digital key access, physical safe codes, and critical instructions for unexpected events.
+                        </p>
+                        <div className="flex items-center gap-2 pt-1.5 text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                          <Zap className="w-3.5 h-3.5" />
+                          <span>Instant Upload • Zero Waiting Time • Direct Access</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-2 rounded-xl bg-slate-200/70 dark:bg-slate-800 text-slate-400 group-hover:bg-amber-500 group-hover:text-white transition-all shrink-0 self-center">
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                </button>
+
+                {/* 2. Instructions to Follow After My Death */}
+                <button
+                  type="button"
+                  onClick={() => handleSelectCategoryAndOpenCreate('POST_DEATH')}
+                  className="w-full text-left p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-800 hover:border-purple-500 dark:hover:border-purple-500 bg-slate-50/70 dark:bg-slate-950/60 hover:bg-purple-50/40 dark:hover:bg-purple-950/20 transition-all duration-200 group relative shadow-xs hover:shadow-md cursor-pointer active:scale-[0.99]"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3.5 rounded-2xl bg-purple-500/15 text-purple-600 dark:text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-colors duration-200 shrink-0">
+                        <HeartHandshake className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                            2. Instructions to Follow After My Death
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-300/60 dark:border-purple-700/60">
+                            Final Wishes
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                          Last wills, memorial requests, digital legacy passwords, inheritance instructions, and confidential family affairs.
+                        </p>
+                        <div className="flex items-center gap-2 pt-1.5 text-[11px] font-bold text-purple-600 dark:text-purple-400">
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                          <span>Secured Vault • Zero Delay Upload • Partner Decryption</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-2 rounded-xl bg-slate-200/70 dark:bg-slate-800 text-slate-400 group-hover:bg-purple-500 group-hover:text-white transition-all shrink-0 self-center">
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-3.5 bg-slate-50 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Instant upload with dedicated AES-256 encryption</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsCategoryChoiceModalOpen(false)}
+                className="px-4 py-1.5 rounded-xl hover:bg-slate-200/70 dark:hover:bg-slate-800 font-semibold text-slate-600 dark:text-slate-300 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Note Modal (Instant Upload - Beautiful, Clean & Easy to Understand) */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 dark:bg-black/90 backdrop-blur-md p-3 sm:p-5 animate-fade-in overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100 max-h-[94vh] flex flex-col my-auto transition-all animate-scale-up">
+            {/* Modal Header */}
+            <div className="px-5 sm:px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 text-white shadow-md">
+              <div className="flex items-center gap-3.5">
+                <div className="p-2.5 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
+                  <FileKey className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-extrabold text-base sm:text-lg text-white">
+                      Create Secret Note for Partner {partnerRole}
+                    </h3>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20 text-white border border-white/30 uppercase tracking-wide">
+                      {currentRole} ➔ {partnerRole}
+                    </span>
+                  </div>
+                  <p className="text-xs text-indigo-100 font-medium mt-0.5">
+                    Encrypted directive for {partnerDisplayName} • Instant Upload (No Waiting Period)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCreateModalOpen(false);
+                    setIsCategoryChoiceModalOpen(true);
+                  }}
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold transition cursor-pointer"
+                  title="Switch note category"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Switch Category</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/15 transition cursor-pointer"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
             {/* Modal Body */}
-            <form onSubmit={handleSaveNote} className="p-6 overflow-y-auto space-y-6 flex-1">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <form onSubmit={handleSaveNote} className="p-5 sm:p-6 overflow-y-auto space-y-5 flex-1">
+              {/* Instant Upload Banner */}
+              <div className="bg-gradient-to-r from-emerald-50/80 via-indigo-50/50 to-emerald-50/80 dark:from-emerald-950/30 dark:via-indigo-950/20 dark:to-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 rounded-2xl p-3.5 flex items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 rounded-xl bg-emerald-500 text-white shadow-xs shrink-0">
+                    <Zap className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <strong className="text-emerald-700 dark:text-emerald-300 font-bold">Instant Upload & Direct Access:</strong> Once saved, this note is encrypted and uploaded immediately for <strong>Partner {partnerRole}</strong> with zero waiting delay.
+                  </p>
+                </div>
+                <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 shrink-0">
+                  <Check className="w-3 h-3 stroke-[3]" />
+                  <span>No Waiting Time</span>
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                 {/* Left Column: Core Note Attributes */}
                 <div className="lg:col-span-5 space-y-4">
+                  {/* Category Selection Cards */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Section / Directive Category
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
+                      {/* Option 1: Private Emergency */}
+                      <div
+                        onClick={() => setCategory('PRIVATE_EMERGENCY')}
+                        className={`p-3 rounded-2xl border-2 transition-all cursor-pointer ${
+                          category === 'PRIVATE_EMERGENCY'
+                            ? 'border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/50 shadow-sm ring-1 ring-indigo-500/20'
+                            : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400">
+                              <AlertTriangle className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="text-xs font-bold text-slate-900 dark:text-white">
+                              Private & Emergency Note
+                            </span>
+                          </div>
+                          <div
+                            className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                              category === 'PRIVATE_EMERGENCY'
+                                ? 'border-indigo-600 bg-indigo-600 text-white'
+                                : 'border-slate-300 dark:border-slate-600'
+                            }`}
+                          >
+                            {category === 'PRIVATE_EMERGENCY' && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                          Emergency passwords, credentials, bank accounts, or critical guidelines.
+                        </p>
+                      </div>
+
+                      {/* Option 2: Post-Death Directives */}
+                      <div
+                        onClick={() => setCategory('POST_DEATH')}
+                        className={`p-3 rounded-2xl border-2 transition-all cursor-pointer ${
+                          category === 'POST_DEATH'
+                            ? 'border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/50 shadow-sm ring-1 ring-indigo-500/20'
+                            : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 rounded-lg bg-purple-100 dark:bg-purple-900/60 text-purple-600 dark:text-purple-400">
+                              <Shield className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="text-xs font-bold text-slate-900 dark:text-white">
+                              Instructions After My Death
+                            </span>
+                          </div>
+                          <div
+                            className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                              category === 'POST_DEATH'
+                                ? 'border-indigo-600 bg-indigo-600 text-white'
+                                : 'border-slate-300 dark:border-slate-600'
+                            }`}
+                          >
+                            {category === 'POST_DEATH' && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                          Will provisions, asset distribution keys, and directives upon unforeseen demise.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Note Title */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
                       <span>Note Title</span>
-                      <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold">Required</span>
+                      <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold">
+                        Required
+                      </span>
                     </label>
                     <input
                       type="text"
                       required
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      placeholder="e.g. Master Vault Keys & Cold Storage"
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700/80 rounded-2xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium"
+                      placeholder="e.g. Master Vault Keys & Bank Safe Combination"
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-2xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium"
                     />
-                  </div>
-
-                  {/* Section / Category */}
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Section / Category
-                    </label>
-                    <select
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value as any)}
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700/80 rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium"
-                    >
-                      <option value="PRIVATE_EMERGENCY">1. Private and Emergency Notes</option>
-                      <option value="POST_DEATH">2. Instructions to Follow After My Death</option>
-                    </select>
                   </div>
 
                   {/* Designated Partner Recipient Card */}
@@ -930,31 +1178,33 @@ export const MySecretNotesPage: React.FC = () => {
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                       Designated Partner Recipient
                     </label>
-                    <div className="bg-gradient-to-br from-indigo-50/60 to-purple-50/40 dark:from-slate-950 dark:to-indigo-950/30 border border-indigo-200/80 dark:border-indigo-800/60 rounded-2xl p-3.5 flex items-center justify-between shadow-sm">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white font-extrabold flex items-center justify-center text-xs shadow-md shadow-indigo-600/30">
+                    <div className="bg-indigo-50/60 dark:bg-slate-950 border border-indigo-200/80 dark:border-indigo-800/60 rounded-2xl p-3 flex items-center justify-between shadow-xs">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white font-black flex items-center justify-center text-xs shadow-md shadow-indigo-600/30 shrink-0">
                           {partnerRole}
                         </div>
-                        <div>
-                          <div className="text-xs font-bold text-slate-900 dark:text-white">
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
                             {partnerDisplayName} ({partnerRole})
                           </div>
-                          <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono truncate">
                             {partnerEmail}
                           </div>
                         </div>
                       </div>
-                      <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shadow-xs">
+                      <span className="text-[9px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shrink-0">
                         Strict Pair
                       </span>
                     </div>
                   </div>
 
                   {/* Dedicated Note Password */}
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
                       <span>Dedicated Note Password</span>
-                      <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium">Min 4 chars</span>
+                      <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium">
+                        Min 4 chars
+                      </span>
                     </label>
                     <div className="relative">
                       <input
@@ -963,7 +1213,7 @@ export const MySecretNotesPage: React.FC = () => {
                         value={notePassword}
                         onChange={(e) => setNotePassword(e.target.value)}
                         placeholder="Enter separate encryption password..."
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700/80 rounded-2xl pl-4 pr-10 py-2.5 font-mono text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-2xl pl-4 pr-10 py-2.5 font-mono text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition"
                       />
                       <button
                         type="button"
@@ -973,6 +1223,23 @@ export const MySecretNotesPage: React.FC = () => {
                         {showCreatePassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
+
+                    {/* Password Strength Indicator */}
+                    {notePassword.length > 0 && (
+                      <div className="space-y-1 pt-1">
+                        <div className="flex items-center justify-between text-[10px] font-bold">
+                          <span className="text-slate-500">Security:</span>
+                          <span className={getPasswordStrength(notePassword).color}>
+                            {getPasswordStrength(notePassword).label}
+                          </span>
+                        </div>
+                        <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all duration-300 ${getPasswordStrength(notePassword).percent} ${getPasswordStrength(notePassword).barColor}`}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Password Hint */}
@@ -985,39 +1252,8 @@ export const MySecretNotesPage: React.FC = () => {
                       value={hint}
                       onChange={(e) => setHint(e.target.value)}
                       placeholder="e.g. In the blue envelope in office drawer"
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700/80 rounded-2xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-2xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition"
                     />
-                  </div>
-
-                  {/* Inactivity Waiting Period */}
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 flex items-center justify-between">
-                      <span>Waiting Period Before Release</span>
-                      <span className="text-[11px] font-mono text-indigo-600 dark:text-indigo-400 font-bold px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/60 dark:border-indigo-800/60">
-                        {waitingPeriodHours === '168' ? '7 Days (168h)' : `${waitingPeriodHours} Hours`}
-                      </span>
-                    </label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {[
-                        { label: '24h', value: '24' },
-                        { label: '48h', value: '48' },
-                        { label: '72h', value: '72' },
-                        { label: '7 Days', value: '168' },
-                      ].map((item) => (
-                        <button
-                          key={item.value}
-                          type="button"
-                          onClick={() => setWaitingPeriodHours(item.value)}
-                          className={`py-2 px-2.5 rounded-2xl text-xs font-bold border transition-all active:scale-95 ${
-                            waitingPeriodHours === item.value
-                              ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/25 ring-2 ring-indigo-500/20'
-                              : 'bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-600 hover:bg-white dark:hover:bg-slate-900'
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
                   </div>
                 </div>
 
@@ -1053,10 +1289,10 @@ export const MySecretNotesPage: React.FC = () => {
                               <span className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 flex items-center justify-center text-[10px] font-extrabold">
                                 {idx + 1}
                               </span>
-                              <span>Security Question #{idx + 1}</span>
+                              <span>Security Recovery Question #{idx + 1}</span>
                             </span>
                             <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">
-                              {idx === 0 ? 'Primary (Required)' : `Backup ${idx}`}
+                              {idx === 0 ? 'Primary (Required)' : `Backup #${idx}`}
                             </span>
                           </div>
 
@@ -1136,21 +1372,21 @@ export const MySecretNotesPage: React.FC = () => {
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0">
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                  <span>Encrypted on your device before transmission (AES-256-GCM)</span>
+                  <span>Instant Upload (0h waiting) • Client-Side AES-256-GCM Encryption</span>
                 </div>
 
                 <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
                   <button
                     type="button"
                     onClick={() => setIsCreateModalOpen(false)}
-                    className="px-5 py-2.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-2xl transition hover:bg-slate-100 dark:hover:bg-slate-800"
+                    className="px-5 py-2.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-2xl transition hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 disabled:opacity-50 text-white rounded-2xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 active:scale-95"
+                    className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 disabled:opacity-50 text-white rounded-2xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 active:scale-95 cursor-pointer"
                   >
                     {isSubmitting ? (
                       <>
