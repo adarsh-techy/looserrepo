@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { logout } from '../../store/slices/authSlice';
-import { setMobileSidebarOpen } from '../../store/slices/uiSlice';
+import { setMobileSidebarOpen, openSignOutModal } from '../../store/slices/uiSlice';
 import {
   Briefcase,
   FolderKanban,
@@ -28,7 +28,6 @@ import {
   LockKeyhole,
 } from 'lucide-react';
 
-
 import { hasPageAccess } from '../../utils/permissions';
 
 interface NavItem {
@@ -48,6 +47,7 @@ export const Sidebar: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.auth.user);
   const isMobileSidebarOpen = useSelector((state: RootState) => state.ui.isMobileSidebarOpen);
+  const isSecretNotesVisible = useSelector((state: RootState) => state.ui.isSecretNotesVisible);
   const unreadCount = useSelector((state: RootState) =>
     state.notifications.notifications.filter(n => !n.isRead).length
   );
@@ -86,8 +86,12 @@ export const Sidebar: React.FC = () => {
         { to: '/passwords', label: 'Passwords', icon: KeyRound },
         { to: '/personal-passwords', label: 'Personal Passwords', icon: LockKeyhole },
         { to: '/documents', label: 'Documents & Cards', icon: CreditCard },
-        { to: '/secret-notes', label: 'Secret Notes', icon: ShieldAlert, isSecretNotes: true },
-        { to: '/my-secret-notes', label: 'My Secret Notes', icon: FileKey },
+        ...(isSecretNotesVisible
+          ? [
+              { to: '/secret-notes', label: 'Secret Notes', icon: ShieldAlert, isSecretNotes: true },
+              { to: '/my-secret-notes', label: 'My Secret Notes', icon: FileKey },
+            ]
+          : []),
       ],
     },
     {
@@ -189,6 +193,17 @@ export const Sidebar: React.FC = () => {
         className="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 shrink-0"
         style={isMobile ? { paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 0.75rem)' } : undefined}
       >
+        {/* Dummy Sign Out button (Text) with secret 3-click unhide trigger */}
+        <button
+          type="button"
+          onClick={() => dispatch(openSignOutModal())}
+          className="flex items-center gap-2.5 w-full px-3 py-2 mb-2 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 bg-red-50/70 dark:bg-red-950/40 hover:bg-red-100/90 dark:hover:bg-red-900/60 border border-red-200/80 dark:border-red-900/60 transition cursor-pointer active:scale-98 shadow-xs"
+          title="Sign Out"
+        >
+          <LogOut className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" />
+          <span>Sign Out</span>
+        </button>
+
         <div className="flex items-center justify-between gap-2 p-2 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-md shrink-0">
@@ -200,12 +215,13 @@ export const Sidebar: React.FC = () => {
             </div>
           </div>
 
+          {/* Real Logout button */}
           <button
             onClick={() => dispatch(logout())}
-            title="Logout"
-            className="p-2 text-slate-500 hover:text-red-500 rounded-xl hover:bg-red-500/10 transition shrink-0 touch-manipulation"
+            title="Sign Out"
+            className="p-2 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/60 hover:bg-red-100 dark:hover:bg-red-900/80 rounded-xl border border-red-200 dark:border-red-900/60 transition shrink-0 touch-manipulation cursor-pointer shadow-xs active:scale-95"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-4 h-4 text-red-600 dark:text-red-400" />
           </button>
         </div>
       </div>

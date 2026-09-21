@@ -96,3 +96,147 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 0.8);
 }
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-up {
+  animation: scaleUp 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ==========================================================================
+   Crimson Red & Clean White Theme with Ambient Red Shadow Background
+   ========================================================================== */
+
+html.theme-red-white {
+  color-scheme: light;
+}
+
+html.theme-red-white body {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Base App Containers in Red & White Theme */
+html.theme-red-white .bg-slate-50,
+html.theme-red-white .bg-slate-950,
+html.theme-red-white .dark\:bg-slate-950,
+html.theme-red-white .dark .bg-slate-950 {
+  background-color: #ffffff !important;
+}
+
+/* Let Main Content Viewport show the ambient red shadow glow */
+html.theme-red-white main {
+  background-color: transparent !important;
+  box-shadow: inset 0 0 100px rgba(239, 68, 68, 0.07);
+}
+
+/* Header & Sidebar in Red & White Theme */
+html.theme-red-white header,
+html.theme-red-white aside > div,
+html.theme-red-white nav[aria-label="Mobile Navigation"] {
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  border-color: #fecaca !important;
+  box-shadow: 0 4px 20px -2px rgba(239, 68, 68, 0.08) !important;
+}
+
+/* Cards, Content Panels & Modals */
+html.theme-red-white .bg-white,
+html.theme-red-white .bg-slate-900,
+html.theme-red-white .dark .bg-slate-900,
+html.theme-red-white .dark\:bg-slate-900,
+html.theme-red-white .bg-slate-800,
+html.theme-red-white .dark .bg-slate-800 {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #fee2e2 !important;
+  box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.08), 0 8px 10px -6px rgba(220, 38, 38, 0.04), 0 0 0 1px rgba(254, 202, 202, 0.6) !important;
+}
+
+/* Interactive Card & Item Hovers in Red Theme */
+html.theme-red-white .hover\:bg-slate-800:hover,
+html.theme-red-white .hover\:bg-slate-800\/50:hover,
+html.theme-red-white .dark .hover\:bg-slate-800:hover,
+html.theme-red-white .hover\:bg-slate-100:hover {
+  background-color: #fff1f2 !important;
+}
+
+/* Subtle Borders in Red Theme */
+html.theme-red-white .border-slate-200,
+html.theme-red-white .border-slate-700,
+html.theme-red-white .border-slate-800,
+html.theme-red-white .dark .border-slate-700,
+html.theme-red-white .dark .border-slate-800 {
+  border-color: #fee2e2 !important;
+}
+
+/* Form Inputs, Selects & Textareas */
+html.theme-red-white input:not([type="checkbox"]):not([type="radio"]),
+html.theme-red-white select,
+html.theme-red-white textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #fecaca !important;
+}
+
+html.theme-red-white input:focus,
+html.theme-red-white select:focus,
+html.theme-red-white textarea:focus {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+}
+
+/* Text Overrides for Red & White Theme */
+html.theme-red-white .text-slate-100,
+html.theme-red-white .dark .text-slate-100,
+html.theme-red-white .dark .text-white {
+  color: #0f172a !important;
+}
+
+html.theme-red-white .text-slate-400,
+html.theme-red-white .dark .text-slate-400,
+html.theme-red-white .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Primary Color Shifts to Crimson */
+html.theme-red-white .text-blue-600,
+html.theme-red-white .dark .text-blue-400 {
+  color: #dc2626 !important;
+}
+
+html.theme-red-white .bg-blue-600 {
+  background-color: #dc2626 !important;
+}
+
+html.theme-red-white .hover\:bg-blue-700:hover {
+  background-color: #b91c1c !important;
+}
+
+html.theme-red-white .bg-blue-50,
+html.theme-red-white .dark .bg-blue-950\/60 {
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+
+/* Selection & Scrollbars in Red Theme */
+html.theme-red-white *::selection {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+}
+
+html.theme-red-white ::-webkit-scrollbar-thumb {
+  background: rgba(239, 68, 68, 0.35) !important;
+}
+
+html.theme-red-white ::-webkit-scrollbar-thumb:hover {
+  background: rgba(220, 38, 38, 0.6) !important;
+}

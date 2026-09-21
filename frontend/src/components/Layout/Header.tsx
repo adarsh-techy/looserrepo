@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { toggleTheme, toggleSirenMute, showToast, toggleMobileSidebar } from '../../store/slices/uiSlice';
+import { toggleTheme, toggleSirenMute, showToast, toggleMobileSidebar, openThemeModal } from '../../store/slices/uiSlice';
 import { sirenAudio } from '../../services/sirenAudio';
 import {
   Menu,
@@ -12,12 +12,14 @@ import {
   VolumeX,
   Clock,
   ArrowLeft,
+  Palette,
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const theme = useSelector((state: RootState) => state.ui.theme);
+  const colorTheme = useSelector((state: RootState) => state.ui.colorTheme);
   const isSirenMuted = useSelector((state: RootState) => state.ui.isSirenMuted);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
@@ -111,10 +113,30 @@ export const Header: React.FC = () => {
           </button>
         </div>
 
+        {/* Red & White Theme Switcher Button */}
+        <button
+          onClick={() => dispatch(openThemeModal())}
+          className={`relative p-1.5 sm:p-2 rounded-xl transition border shrink-0 cursor-pointer ${
+            colorTheme === 'red-white'
+              ? 'bg-red-50 dark:bg-red-950/70 text-red-600 dark:text-red-400 border-red-300 dark:border-red-700 shadow-[0_0_12px_rgba(239,68,68,0.35)]'
+              : 'text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50/70 dark:hover:bg-red-950/30 border-slate-200 dark:border-slate-800'
+          }`}
+          title={
+            colorTheme === 'red-white'
+              ? 'Crimson Red & White Theme Active (Click to configure)'
+              : 'Switch Theme (Red & White with Red Shadow Background)'
+          }
+        >
+          <Palette className="w-4 h-4" />
+          {colorTheme === 'red-white' && (
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-600 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse" />
+          )}
+        </button>
+
         {/* Theme Toggle Button */}
         <button
           onClick={() => dispatch(toggleTheme())}
-          className="p-1.5 sm:p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-800 shrink-0"
+          className="p-1.5 sm:p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-800 shrink-0 cursor-pointer"
           title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
         >
           {theme === 'dark' ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4 text-slate-700" />}

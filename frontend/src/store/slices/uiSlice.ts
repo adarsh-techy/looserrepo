@@ -3,6 +3,10 @@ import { SecurityAlert } from '../../types';
 
 interface UiState {
   theme: 'dark' | 'light';
+  colorTheme: 'default' | 'red-white';
+  isThemeModalOpen: boolean;
+  isSignOutModalOpen: boolean;
+  isSecretNotesVisible: boolean;
   isMobileSidebarOpen: boolean;
   activeSirenAlert: SecurityAlert | null;
   isReauthModalOpen: boolean;
@@ -14,17 +18,31 @@ interface UiState {
 const savedTheme = localStorage.getItem('looser_theme') as 'dark' | 'light' | null;
 const initialTheme: 'dark' | 'light' = savedTheme || 'dark';
 
-// Apply theme class to document element on startup
+const savedColorTheme = (localStorage.getItem('looser_color_theme') as 'default' | 'red-white' | null) || 'default';
+const savedSecretNotesVisible = localStorage.getItem('looser_secret_notes_visible') === 'true';
+
+// Apply theme classes to document element on startup
 if (typeof document !== 'undefined') {
-  if (initialTheme === 'dark') {
-    document.documentElement.classList.add('dark');
-  } else {
+  if (savedColorTheme === 'red-white') {
+    document.documentElement.classList.add('theme-red-white');
+    // When red-white theme is active, light/white styling takes place
     document.documentElement.classList.remove('dark');
+  } else {
+    document.documentElement.classList.remove('theme-red-white');
+    if (initialTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }
 }
 
 const initialState: UiState = {
   theme: initialTheme,
+  colorTheme: savedColorTheme,
+  isThemeModalOpen: false,
+  isSignOutModalOpen: false,
+  isSecretNotesVisible: savedSecretNotesVisible,
   isMobileSidebarOpen: false,
   activeSirenAlert: null,
   isReauthModalOpen: false,
@@ -46,20 +64,60 @@ const uiSlice = createSlice({
     toggleTheme: (state) => {
       state.theme = state.theme === 'dark' ? 'light' : 'dark';
       localStorage.setItem('looser_theme', state.theme);
-      if (state.theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
+      // Only toggle dark class on html if we are not in red-white theme
+      if (state.colorTheme !== 'red-white') {
+        if (state.theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
       }
     },
     setTheme: (state, action: PayloadAction<'dark' | 'light'>) => {
       state.theme = action.payload;
       localStorage.setItem('looser_theme', action.payload);
-      if (action.payload === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
+      if (state.colorTheme !== 'red-white') {
+        if (action.payload === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
       }
+    },
+    setColorTheme: (state, action: PayloadAction<'default' | 'red-white'>) => {
+      state.colorTheme = action.payload;
+      localStorage.setItem('looser_color_theme', action.payload);
+      if (action.payload === 'red-white') {
+        document.documentElement.classList.add('theme-red-white');
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.remove('theme-red-white');
+        if (state.theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    },
+    openThemeModal: (state) => {
+      state.isThemeModalOpen = true;
+    },
+    closeThemeModal: (state) => {
+      state.isThemeModalOpen = false;
+    },
+    openSignOutModal: (state) => {
+      state.isSignOutModalOpen = true;
+    },
+    closeSignOutModal: (state) => {
+      state.isSignOutModalOpen = false;
+    },
+    toggleSecretNotesVisibility: (state) => {
+      state.isSecretNotesVisible = !state.isSecretNotesVisible;
+      localStorage.setItem('looser_secret_notes_visible', String(state.isSecretNotesVisible));
+    },
+    setSecretNotesVisibility: (state, action: PayloadAction<boolean>) => {
+      state.isSecretNotesVisible = action.payload;
+      localStorage.setItem('looser_secret_notes_visible', String(action.payload));
     },
     triggerSecuritySiren: (state, action: PayloadAction<SecurityAlert>) => {
       state.activeSirenAlert = action.payload;
@@ -95,6 +153,13 @@ export const {
   setMobileSidebarOpen,
   toggleTheme,
   setTheme,
+  setColorTheme,
+  openThemeModal,
+  closeThemeModal,
+  openSignOutModal,
+  closeSignOutModal,
+  toggleSecretNotesVisibility,
+  setSecretNotesVisibility,
   triggerSecuritySiren,
   dismissSecuritySiren,
   openReauthModal,

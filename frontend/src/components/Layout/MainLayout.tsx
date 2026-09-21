@@ -8,6 +8,8 @@ import { ReauthModal } from '../Modals/ReauthModal';
 import { SecuritySirenAlertModal } from '../Modals/SecuritySirenAlertModal';
 import { PartnerNoteOnLoginModal } from '../Modals/PartnerNoteOnLoginModal';
 import { PartnerBreachAlertModal } from '../Modals/PartnerBreachAlertModal';
+import { ThemeConfirmModal } from '../Modals/ThemeConfirmModal';
+import { SignOutModal } from '../Modals/SignOutModal';
 import { getSocket } from '../../services/socket';
 import { triggerSecuritySiren, clearToast, toggleMobileSidebar } from '../../store/slices/uiSlice';
 import { addLiveNotification, fetchNotifications } from '../../store/slices/notificationSlice';
@@ -35,6 +37,8 @@ export const MainLayout: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
   const token = useSelector((state: RootState) => state.auth.token);
+  const colorTheme = useSelector((state: RootState) => state.ui.colorTheme);
+  const isSecretNotesVisible = useSelector((state: RootState) => state.ui.isSecretNotesVisible);
   const activeToast = useSelector((state: RootState) => state.ui.activeToast);
 
   useEffect(() => {
@@ -108,7 +112,9 @@ export const MainLayout: React.FC = () => {
     { to: '/works', label: 'Works', icon: FolderKanban },
     { to: '/payments', label: 'Payments', icon: Receipt },
     { to: '/passwords', label: 'Vault', icon: KeyRound },
-    { to: '/secret-notes', label: 'Emergency', icon: ShieldAlert, isAlert: true },
+    ...(isSecretNotesVisible
+      ? [{ to: '/secret-notes', label: 'Emergency', icon: ShieldAlert, isAlert: true }]
+      : []),
   ];
 
   return (
@@ -192,6 +198,25 @@ export const MainLayout: React.FC = () => {
       <SecuritySirenAlertModal />
       <PartnerNoteOnLoginModal />
       <PartnerBreachAlertModal />
+      <ThemeConfirmModal />
+      <SignOutModal />
+
+      {/* Ambient Red Shadow Lighting Background for Red & White Theme */}
+      {colorTheme === 'red-white' && (
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+          {/* Top-left soft red ambient glow */}
+          <div
+            className="absolute -top-24 -left-24 w-[28rem] h-[28rem] rounded-full bg-red-500/20 blur-[100px] animate-pulse"
+            style={{ animationDuration: '6s' }}
+          />
+          {/* Top-right crimson ambient illumination */}
+          <div className="absolute -top-16 -right-20 w-[32rem] h-[32rem] rounded-full bg-rose-500/15 blur-[120px]" />
+          {/* Center-bottom radiant red glow */}
+          <div className="absolute -bottom-32 left-1/3 w-[36rem] h-[36rem] rounded-full bg-red-600/15 blur-[130px]" />
+          {/* Deep ambient perimeter vignette / red shadow border on whole page */}
+          <div className="absolute inset-0 shadow-[inset_0_0_100px_rgba(239,68,68,0.22)] sm:shadow-[inset_0_0_140px_rgba(239,68,68,0.25)]" />
+        </div>
+      )}
 
       {activeToast && (
         <div
