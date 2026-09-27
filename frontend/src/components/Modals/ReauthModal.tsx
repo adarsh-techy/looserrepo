@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { closeReauthModal, showToast } from '../../store/slices/uiSlice';
-import { setReauthSuccess } from '../../store/slices/authSlice';
+import { closeReauthModal, showToast } from '../../store/slices/core/uiSlice';
+import { setReauthSuccess } from '../../store/slices/core/authSlice';
 import { api } from '../../services/api';
 import { ShieldCheck, Lock, X, Loader2 } from 'lucide-react';
 

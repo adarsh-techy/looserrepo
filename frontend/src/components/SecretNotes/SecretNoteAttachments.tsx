@@ -26,19 +26,28 @@ import {
  * Returns structured payload with text & attachments, or falls back to legacy string.
  */
 export function parseSecretNotePayload(rawContent: string): SecretNotePayload {
-  if (!rawContent) return { text: '', attachments: [] };
+  if (!rawContent) return { text: '', attachments: [], contacts: [] };
   try {
     const parsed = JSON.parse(rawContent);
-    if (parsed && typeof parsed === 'object' && ('text' in parsed || 'attachments' in parsed)) {
+    if (parsed && typeof parsed === 'object' && ('text' in parsed || 'attachments' in parsed || 'contactName' in parsed || 'contactPhone' in parsed || 'contacts' in parsed)) {
+      const contacts = Array.isArray(parsed.contacts)
+        ? parsed.contacts
+        : (parsed.contactName || parsed.contactPhone)
+        ? [{ id: '1', name: parsed.contactName || '', phone: parsed.contactPhone || '', role: 'Primary Contact' }]
+        : [];
+
       return {
         text: typeof parsed.text === 'string' ? parsed.text : '',
         attachments: Array.isArray(parsed.attachments) ? parsed.attachments : [],
+        contactName: typeof parsed.contactName === 'string' ? parsed.contactName : undefined,
+        contactPhone: typeof parsed.contactPhone === 'string' ? parsed.contactPhone : undefined,
+        contacts,
       };
     }
   } catch (e) {
     // Legacy plain string format
   }
-  return { text: rawContent, attachments: [] };
+  return { text: rawContent, attachments: [], contacts: [] };
 }
 
 /**

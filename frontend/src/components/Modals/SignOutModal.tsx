@@ -5,7 +5,7 @@ import {
   closeSignOutModal,
   toggleSecretNotesVisibility,
   showToast,
-} from '../../store/slices/uiSlice';
+} from '../../store/slices/core/uiSlice';
 import { LogOut, X, AlertTriangle } from 'lucide-react';
 
 export const SignOutModal: React.FC = () => {

@@ -1,5 +1,8 @@
 import http from 'http';
 import express from 'express';
+// Forwards rejected promises from async route handlers to the error middleware below
+// (Express 4 doesn't, and an unhandled rejection crashes the process).
+import 'express-async-errors';
 import cors from 'cors';
 import helmet from 'helmet';
 import { config } from './config';
@@ -58,10 +61,34 @@ app.use('/api', routes);
 // Global Error Handler
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('[ServerError]', err);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error',
+
+  // Map common Prisma failures to client errors instead of generic 500s.
+  let status = err.status || err.statusCode || 500;
+  let message = err.message || 'Internal Server Error';
+  if (err.code === 'P2025') {
+    status = 404;
+    message = 'Record not found';
+  } else if (err.code === 'P2003') {
+    status = 400;
+    message = 'Referenced record does not exist';
+  } else if (err.name === 'PrismaClientValidationError') {
+    status = 400;
+    message = 'Invalid request data';
+  }
+
+  // Don't leak internal error details from production 500s.
+  if (status >= 500 && config.nodeEnv === 'production') {
+    message = 'Internal Server Error';
+  }
+
+  res.status(status).json({
+    error: message,
     ...(config.nodeEnv === 'development' && { stack: err.stack }),
   });
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[UnhandledRejection]', reason);
 });
 
 if (process.env.NODE_ENV !== 'test') {

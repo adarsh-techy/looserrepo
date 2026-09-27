@@ -2,8 +2,8 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { logout } from '../../store/slices/authSlice';
-import { setMobileSidebarOpen, openSignOutModal } from '../../store/slices/uiSlice';
+import { logout } from '../../store/slices/core/authSlice';
+import { setMobileSidebarOpen, openSignOutModal } from '../../store/slices/core/uiSlice';
 import {
   Briefcase,
   FolderKanban,

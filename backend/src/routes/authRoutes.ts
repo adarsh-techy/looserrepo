@@ -10,13 +10,17 @@ import {
   getProfile,
   updatePreferences,
   changePassword,
+  refreshSession,
+  logoutSession,
 } from '../controllers/authController';
-import { requireAuth, authRateLimiter } from '../middlewares/auth';
+import { requireAuth, authRateLimiter, refreshRateLimiter } from '../middlewares/auth';
 
 const router = Router();
 
 router.post('/register', authRateLimiter, register);
 router.post('/login', authRateLimiter, login);
+router.post('/refresh', refreshRateLimiter, refreshSession);
+router.post('/logout', refreshRateLimiter, logoutSession);
 router.post('/reauth', requireAuth, authRateLimiter, reauthenticate);
 router.post('/change-password', requireAuth, changePassword);
 router.post('/2fa/setup', requireAuth, setup2FA);

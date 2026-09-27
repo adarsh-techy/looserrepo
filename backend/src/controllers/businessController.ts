@@ -8,6 +8,8 @@ export async function getBusinessItems(req: AuthenticatedRequest, res: Response)
   const { search, category, tag } = req.query;
 
   let items = await prisma.businessItem.findMany({
+    // Private (unshared) items are visible only to their owner.
+    where: { OR: [{ isShared: true }, { ownerId: req.user?.id }] },
     include: {
       owner: { select: { id: true, name: true, email: true } },
     },
@@ -54,7 +56,7 @@ export async function getBusinessItemById(req: AuthenticatedRequest, res: Respon
     },
   });
 
-  if (!item) {
+  if (!item || (!item.isShared && item.ownerId !== req.user?.id)) {
     return res.status(404).json({ error: 'Business item not found' });
   }
 
@@ -114,7 +116,9 @@ export async function updateBusinessItem(req: AuthenticatedRequest, res: Respons
   const userId = req.user?.id!;
 
   const existing = await prisma.businessItem.findUnique({ where: { id } });
-  if (!existing) return res.status(404).json({ error: 'Item not found' });
+  if (!existing || (!existing.isShared && existing.ownerId !== userId)) {
+    return res.status(404).json({ error: 'Item not found' });
+  }
 
   const updated = await prisma.businessItem.update({
     where: { id },
@@ -125,7 +129,7 @@ export async function updateBusinessItem(req: AuthenticatedRequest, res: Respons
       ...(tags !== undefined && { tags: JSON.stringify(tags) }),
       ...(links !== undefined && { links: JSON.stringify(links) }),
       ...(attachments !== undefined && { attachments: JSON.stringify(attachments) }),
-      ...(isShared !== undefined && { isShared }),
+      ...(isShared !== undefined && existing.ownerId === userId && { isShared }),
     },
     include: {
       owner: { select: { id: true, name: true, email: true } },
@@ -155,7 +159,9 @@ export async function deleteBusinessItem(req: AuthenticatedRequest, res: Respons
   const userId = req.user?.id!;
 
   const existing = await prisma.businessItem.findUnique({ where: { id } });
-  if (!existing) return res.status(404).json({ error: 'Item not found' });
+  if (!existing || (!existing.isShared && existing.ownerId !== userId)) {
+    return res.status(404).json({ error: 'Item not found' });
+  }
 
   // Move snapshot to Trash
   await moveToTrash({

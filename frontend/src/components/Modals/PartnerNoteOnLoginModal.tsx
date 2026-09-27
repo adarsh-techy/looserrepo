@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { dismissLoginNotes } from '../../store/slices/authSlice';
-import { markSharedNoteReadAction } from '../../store/slices/sharedNotesSlice';
+import { dismissLoginNotes } from '../../store/slices/core/authSlice';
+import { markSharedNoteReadAction } from '../../store/slices/notifications/sharedNotesSlice';
 import { MessageSquareText, Check, Clock, User, X } from 'lucide-react';
 
 export const PartnerNoteOnLoginModal: React.FC = () => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { dismissSecuritySiren, toggleSirenMute } from '../../store/slices/uiSlice';
+import { dismissSecuritySiren, toggleSirenMute } from '../../store/slices/core/uiSlice';
 import { sirenAudio } from '../../services/sirenAudio';
 import { AlertTriangle, Volume2, VolumeX, ShieldAlert, CheckCircle, BellRing } from 'lucide-react';
 

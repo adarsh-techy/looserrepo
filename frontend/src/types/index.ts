@@ -202,9 +202,19 @@ export interface NoteAttachment {
   dataUrl: string;
 }
 
+export interface SecretNoteContact {
+  id: string;
+  name: string;
+  phone: string;
+  role?: string;
+}
+
 export interface SecretNotePayload {
   text: string;
   attachments: NoteAttachment[];
+  contactName?: string;
+  contactPhone?: string;
+  contacts?: SecretNoteContact[];
 }
 
 export interface WorkCredential {

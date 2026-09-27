@@ -19,21 +19,18 @@ export async function moveToTrash({
   itemData,
   deletedById,
 }: MoveToTrashParams) {
-  try {
-    return await prisma.trashItem.create({
-      data: {
-        originalId,
-        itemType,
-        title: title || 'Untitled Item',
-        subtitle: subtitle || null,
-        deleteReason: deleteReason || null,
-        itemData: typeof itemData === 'string' ? itemData : JSON.stringify(itemData),
-        deletedById,
-      },
-    });
-  } catch (error) {
-    console.error('Failed to record trash item snapshot:', error);
-    return null;
-  }
+  // Let failures propagate: callers delete the original right after, so a silent failure
+  // here would lose the record for good.
+  return prisma.trashItem.create({
+    data: {
+      originalId,
+      itemType,
+      title: title || 'Untitled Item',
+      subtitle: subtitle || null,
+      deleteReason: deleteReason || null,
+      itemData: typeof itemData === 'string' ? itemData : JSON.stringify(itemData),
+      deletedById,
+    },
+  });
 }
 

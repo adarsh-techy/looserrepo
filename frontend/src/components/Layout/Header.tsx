@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { toggleTheme, toggleSirenMute, showToast, toggleMobileSidebar, openThemeModal } from '../../store/slices/uiSlice';
+import { toggleTheme, toggleSirenMute, showToast, toggleMobileSidebar, openThemeModal } from '../../store/slices/core/uiSlice';
 import { sirenAudio } from '../../services/sirenAudio';
 import {
   Menu,
@@ -15,6 +15,9 @@ import {
   Palette,
 } from 'lucide-react';
 
+import { api } from '../../services/api';
+import { getSocket } from '../../services/socket';
+
 export const Header: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -22,6 +25,20 @@ export const Header: React.FC = () => {
   const colorTheme = useSelector((state: RootState) => state.ui.colorTheme);
   const isSirenMuted = useSelector((state: RootState) => state.ui.isSirenMuted);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
+
+  const handleToggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    dispatch(toggleTheme());
+
+    const socket = getSocket();
+    if (socket && socket.connected) {
+      socket.emit('change_workspace_theme', { themeMode: nextTheme });
+    }
+
+    api.put('/workspace/theme', { themeMode: nextTheme }).catch((err) => {
+      console.warn('[Header] Failed to sync theme mode:', err);
+    });
+  };
 
   // Live ticking date and time
   useEffect(() => {
@@ -135,7 +152,7 @@ export const Header: React.FC = () => {
 
         {/* Theme Toggle Button */}
         <button
-          onClick={() => dispatch(toggleTheme())}
+          onClick={handleToggleTheme}
           className="p-1.5 sm:p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-800 shrink-0 cursor-pointer"
           title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
         >

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { closeThemeModal, setColorTheme, showToast } from '../../store/slices/uiSlice';
+import { closeThemeModal, setColorTheme, showToast } from '../../store/slices/core/uiSlice';
 import {
   Palette,
   Check,
@@ -11,6 +11,9 @@ import {
   Flame,
   CheckCircle2,
 } from 'lucide-react';
+
+import { api } from '../../services/api';
+import { getSocket } from '../../services/socket';
 
 export const ThemeConfirmModal: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,21 +34,33 @@ export const ThemeConfirmModal: React.FC = () => {
 
   if (!isOpen) return null;
 
-  const handleApplyTheme = () => {
+  const handleApplyTheme = async () => {
     dispatch(setColorTheme(selectedTheme));
     dispatch(closeThemeModal());
+
+    // Real-time synchronization to partner (AD <-> NS)
+    const socket = getSocket();
+    if (socket && socket.connected) {
+      socket.emit('change_workspace_theme', { colorTheme: selectedTheme });
+    }
+
+    try {
+      await api.put('/workspace/theme', { colorTheme: selectedTheme });
+    } catch (err) {
+      console.warn('[WorkspaceTheme] Error persisting theme to backend:', err);
+    }
 
     if (selectedTheme === 'red-white') {
       dispatch(
         showToast({
-          message: 'Crimson Red & White theme applied with ambient red shadow background!',
+          message: 'Crimson Red & White theme applied and synchronized across workspace (AD & NS)!',
           type: 'success',
         })
       );
     } else {
       dispatch(
         showToast({
-          message: 'Workspace reverted back to standard theme.',
+          message: 'Workspace reverted back to standard theme and synchronized across workspace (AD & NS).',
           type: 'info',
         })
       );

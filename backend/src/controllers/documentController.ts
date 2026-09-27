@@ -190,7 +190,8 @@ export async function getDocumentItems(req: AuthenticatedRequest, res: Response)
     // Seed samples if empty for this user
     await seedInitialDocumentSamples(userId);
 
-    const whereClause: any = {};
+    // Private (unshared) documents are visible only to their owner.
+    const whereClause: any = { OR: [{ isShared: true }, { ownerId: userId }] };
 
     if (category && typeof category === 'string' && category !== 'ALL') {
       whereClause.category = category.toUpperCase();
@@ -249,7 +250,7 @@ export async function getDocumentItemById(req: AuthenticatedRequest, res: Respon
       },
     });
 
-    if (!item) {
+    if (!item || (!item.isShared && item.ownerId !== req.user?.id)) {
       return res.status(404).json({ error: 'Document not found' });
     }
 
@@ -375,7 +376,7 @@ export async function updateDocumentItem(req: AuthenticatedRequest, res: Respons
     const { id } = req.params;
 
     const existing = await prisma.documentItem.findUnique({ where: { id } });
-    if (!existing) {
+    if (!existing || (!existing.isShared && existing.ownerId !== userId)) {
       return res.status(404).json({ error: 'Document not found' });
     }
 
@@ -478,7 +479,7 @@ export async function deleteDocumentItem(req: AuthenticatedRequest, res: Respons
     const { id } = req.params;
 
     const existing = await prisma.documentItem.findUnique({ where: { id } });
-    if (!existing) {
+    if (!existing || (!existing.isShared && existing.ownerId !== userId)) {
       return res.status(404).json({ error: 'Document not found' });
     }
 

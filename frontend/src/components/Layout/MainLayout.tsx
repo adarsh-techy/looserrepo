@@ -11,16 +11,17 @@ import { PartnerBreachAlertModal } from '../Modals/PartnerBreachAlertModal';
 import { ThemeConfirmModal } from '../Modals/ThemeConfirmModal';
 import { SignOutModal } from '../Modals/SignOutModal';
 import { getSocket } from '../../services/socket';
-import { triggerSecuritySiren, clearToast, toggleMobileSidebar } from '../../store/slices/uiSlice';
-import { addLiveNotification, fetchNotifications } from '../../store/slices/notificationSlice';
-import { fetchSharedNotes } from '../../store/slices/sharedNotesSlice';
-import { fetchPartnerStatus } from '../../store/slices/authSlice';
+import { triggerSecuritySiren, clearToast, toggleMobileSidebar, setColorTheme, setTheme, showToast } from '../../store/slices/core/uiSlice';
+import { addLiveNotification, fetchNotifications } from '../../store/slices/notifications/notificationSlice';
+import { fetchSharedNotes } from '../../store/slices/notifications/sharedNotesSlice';
+import { fetchPartnerStatus } from '../../store/slices/core/authSlice';
 import {
   fetchUnreadChatCount,
   incrementUnreadCount,
   updateReadReceipts,
-} from '../../store/slices/chatSlice';
+} from '../../store/slices/messages/chatSlice';
 import { SecurityAlert } from '../../types';
+import { api } from '../../services/api';
 import {
   CheckCircle2,
   AlertTriangle,
@@ -37,12 +38,29 @@ export const MainLayout: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
   const token = useSelector((state: RootState) => state.auth.token);
+  const user = useSelector((state: RootState) => state.auth.user);
   const colorTheme = useSelector((state: RootState) => state.ui.colorTheme);
   const isSecretNotesVisible = useSelector((state: RootState) => state.ui.isSecretNotesVisible);
   const activeToast = useSelector((state: RootState) => state.ui.activeToast);
 
   useEffect(() => {
     if (!token) return;
+
+    // Fetch and sync current shared workspace theme from backend on load
+    const syncWorkspaceTheme = async () => {
+      try {
+        const res = await api.get('/workspace/theme');
+        if (res.colorTheme && (res.colorTheme === 'default' || res.colorTheme === 'red-white')) {
+          dispatch(setColorTheme(res.colorTheme));
+        }
+        if (res.themeMode && (res.themeMode === 'dark' || res.themeMode === 'light')) {
+          dispatch(setTheme(res.themeMode));
+        }
+      } catch (e) {
+        // Soft fail if offline or network glitch
+      }
+    };
+    syncWorkspaceTheme();
 
     const socket = getSocket(token);
     if (!socket) return;
@@ -73,6 +91,38 @@ export const MainLayout: React.FC = () => {
       dispatch(updateReadReceipts(readData));
     });
 
+    // Real-time bidirectional theme sync between AD and NS
+    const handleWorkspaceThemeChanged = (data: {
+      colorTheme?: 'default' | 'red-white';
+      themeMode?: 'dark' | 'light';
+      updatedByRole?: string;
+      updatedByName?: string;
+    }) => {
+      if (data.colorTheme) {
+        dispatch(setColorTheme(data.colorTheme));
+      }
+      if (data.themeMode) {
+        dispatch(setTheme(data.themeMode));
+      }
+
+      const myRole = ((user?.role || 'AD').toUpperCase() === 'NS') ? 'NS' : 'AD';
+      if (data.updatedByRole && data.updatedByRole !== myRole) {
+        const label = data.colorTheme === 'red-white'
+          ? 'Crimson Red & White'
+          : data.colorTheme === 'default'
+          ? 'Standard Default'
+          : `${data.themeMode} mode`;
+        dispatch(
+          showToast({
+            message: `Workspace Theme was changed to ${label} by partner (${data.updatedByRole})!`,
+            type: 'info',
+          })
+        );
+      }
+    };
+
+    socket.on('workspace_theme_changed', handleWorkspaceThemeChanged);
+
     dispatch(fetchPartnerStatus());
     dispatch(fetchNotifications());
     dispatch(fetchSharedNotes());
@@ -81,6 +131,7 @@ export const MainLayout: React.FC = () => {
     const interval = setInterval(() => {
       dispatch(fetchPartnerStatus());
       dispatch(fetchUnreadChatCount());
+      syncWorkspaceTheme();
     }, 15000);
 
     return () => {
@@ -88,8 +139,9 @@ export const MainLayout: React.FC = () => {
       socket.off('security_alert');
       socket.off('new_message');
       socket.off('messages_read');
+      socket.off('workspace_theme_changed', handleWorkspaceThemeChanged);
     };
-  }, [token, dispatch]);
+  }, [token, dispatch, user?.role]);
 
   useEffect(() => {
     if (activeToast) {
@@ -127,7 +179,15 @@ export const MainLayout: React.FC = () => {
           style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 5.5rem)' }}
         >
           <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 animate-fade-in">
-            <Outlet />
+            <React.Suspense
+              fallback={
+                <div className="flex items-center justify-center py-24">
+                  <div className="w-8 h-8 rounded-full border-2 border-red-500 border-t-transparent animate-spin" />
+                </div>
+              }
+            >
+              <Outlet />
+            </React.Suspense>
           </div>
         </main>
 

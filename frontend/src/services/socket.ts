@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
+import { refreshAccessToken } from './api';
 
 let socket: Socket | null = null;
 
@@ -23,7 +24,8 @@ export function getSocket(token?: string): Socket | null {
         : '/');
 
     socket = io(socketUrl, {
-      auth: { token },
+      // Read the token on every (re)connect: access tokens rotate every few minutes.
+      auth: (cb) => cb({ token: localStorage.getItem('looser_token') }),
       transports: ['websocket', 'polling'],
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,
@@ -39,6 +41,15 @@ export function getSocket(token?: string): Socket | null {
 
     socket.on('connect_error', (err) => {
       console.warn('⚡ Socket connection error:', err.message);
+      // The server rejected an expired token; socket.io won't retry that on its own.
+      if (err.message.startsWith('Authentication error')) {
+        const rejected = socket;
+        refreshAccessToken()
+          .then((newToken) => {
+            if (newToken && rejected === socket) rejected?.connect();
+          })
+          .catch(() => {});
+      }
     });
   }
 

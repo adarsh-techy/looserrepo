@@ -1,19 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './slices/authSlice';
-import uiReducer from './slices/uiSlice';
-import vaultReducer from './slices/vaultSlice';
-import businessReducer from './slices/businessSlice';
-import futurePlansReducer from './slices/futurePlansSlice';
-import sharedNotesReducer from './slices/sharedNotesSlice';
-import secretNotesReducer from './slices/secretNotesSlice';
-import auditLogReducer from './slices/auditLogSlice';
-import notificationReducer from './slices/notificationSlice';
-import dayToDayReducer from './slices/dayToDaySlice';
-import chatReducer from './slices/chatSlice';
-import worksReducer from './slices/worksSlice';
-import paymentsReducer from './slices/paymentsSlice';
-import moneyReducer from './slices/moneySlice';
-import personalVaultReducer from './slices/personalVaultSlice';
+import authReducer from './slices/core/authSlice';
+import uiReducer from './slices/core/uiSlice';
+import vaultReducer from './slices/passwords/vaultSlice';
+import businessReducer from './slices/business/businessSlice';
+import futurePlansReducer from './slices/futurePlans/futurePlansSlice';
+import sharedNotesReducer from './slices/notifications/sharedNotesSlice';
+import secretNotesReducer from './slices/secretNotes/secretNotesSlice';
+import auditLogReducer from './slices/admin/auditLogSlice';
+import notificationReducer from './slices/notifications/notificationSlice';
+import dayToDayReducer from './slices/dayToDay/dayToDaySlice';
+import chatReducer from './slices/messages/chatSlice';
+import worksReducer from './slices/works/worksSlice';
+import paymentsReducer from './slices/payments/paymentsSlice';
+import moneyReducer from './slices/money/moneySlice';
+import personalVaultReducer from './slices/passwords/personalVaultSlice';
 
 export const store = configureStore({
   reducer: {

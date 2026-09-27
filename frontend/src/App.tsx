@@ -1,33 +1,32 @@
-import React, { useEffect } from 'react';
+import React, { lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from './store';
-import { fetchProfile, logout } from './store/slices/authSlice';
+import { fetchProfile, logout } from './store/slices/core/authSlice';
 import { MainLayout } from './components/Layout/MainLayout';
-import { LoginPage } from './pages/LoginPage';
-import { BusinessPage } from './pages/BusinessPage';
-import { BusinessDetailPage } from './pages/BusinessDetailPage';
-import { FuturePlansPage } from './pages/FuturePlansPage';
-import { FuturePlanDetailPage } from './pages/FuturePlanDetailPage';
-import { DayToDayPage } from './pages/DayToDayPage';
-import { PasswordsPage } from './pages/PasswordsPage';
-import { PersonalPasswordsPage } from './pages/PersonalPasswordsPage';
-import { SecretNotesPage } from './pages/SecretNotesPage';
-import { MySecretNotesPage } from './pages/MySecretNotesPage';
-import { AuditLogPage } from './pages/AuditLogPage';
-import { UsersPage } from './pages/UsersPage';
-import { NotificationsPage } from './pages/NotificationsPage';
-import { RemindersNotesPage } from './pages/RemindersNotesPage';
-import { PaymentsPage } from './pages/PaymentsPage';
-import { MoneyManagementPage } from './pages/MoneyManagementPage';
-import { WorksPage } from './pages/WorksPage';
-import { WorkFormPage } from './pages/WorkFormPage';
-import { TrashPage } from './pages/TrashPage';
-import { HealthPage } from './pages/HealthPage';
-import { DocumentsPage } from './pages/DocumentsPage';
-
-
+import { LoginPage } from './pages/auth/LoginPage';
 import { hasPageAccess, getDefaultAccessibleRoute } from './utils/permissions';
+
+const BusinessPage = lazy(() => import('./pages/business/BusinessPage').then((m) => ({ default: m.BusinessPage })));
+const BusinessDetailPage = lazy(() => import('./pages/business/BusinessDetailPage').then((m) => ({ default: m.BusinessDetailPage })));
+const FuturePlansPage = lazy(() => import('./pages/futurePlans/FuturePlansPage').then((m) => ({ default: m.FuturePlansPage })));
+const FuturePlanDetailPage = lazy(() => import('./pages/futurePlans/FuturePlanDetailPage').then((m) => ({ default: m.FuturePlanDetailPage })));
+const DayToDayPage = lazy(() => import('./pages/dayToDay/DayToDayPage').then((m) => ({ default: m.DayToDayPage })));
+const PasswordsPage = lazy(() => import('./pages/passwords/PasswordsPage').then((m) => ({ default: m.PasswordsPage })));
+const PersonalPasswordsPage = lazy(() => import('./pages/passwords/PersonalPasswordsPage').then((m) => ({ default: m.PersonalPasswordsPage })));
+const SecretNotesPage = lazy(() => import('./pages/secretNotes/SecretNotesPage').then((m) => ({ default: m.SecretNotesPage })));
+const MySecretNotesPage = lazy(() => import('./pages/secretNotes/MySecretNotesPage').then((m) => ({ default: m.MySecretNotesPage })));
+const AuditLogPage = lazy(() => import('./pages/admin/AuditLogPage').then((m) => ({ default: m.AuditLogPage })));
+const UsersPage = lazy(() => import('./pages/admin/UsersPage').then((m) => ({ default: m.UsersPage })));
+const NotificationsPage = lazy(() => import('./pages/notifications/NotificationsPage').then((m) => ({ default: m.NotificationsPage })));
+const RemindersNotesPage = lazy(() => import('./pages/notifications/RemindersNotesPage').then((m) => ({ default: m.RemindersNotesPage })));
+const PaymentsPage = lazy(() => import('./pages/payments/PaymentsPage').then((m) => ({ default: m.PaymentsPage })));
+const MoneyManagementPage = lazy(() => import('./pages/money/MoneyManagementPage').then((m) => ({ default: m.MoneyManagementPage })));
+const WorksPage = lazy(() => import('./pages/works/WorksPage').then((m) => ({ default: m.WorksPage })));
+const WorkFormPage = lazy(() => import('./pages/works/WorkFormPage').then((m) => ({ default: m.WorkFormPage })));
+const TrashPage = lazy(() => import('./pages/trash/TrashPage').then((m) => ({ default: m.TrashPage })));
+const HealthPage = lazy(() => import('./pages/health/HealthPage').then((m) => ({ default: m.HealthPage })));
+const DocumentsPage = lazy(() => import('./pages/documents/DocumentsPage').then((m) => ({ default: m.DocumentsPage })));
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = useSelector((state: RootState) => state.auth.token);

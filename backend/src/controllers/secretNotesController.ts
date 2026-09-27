@@ -381,7 +381,7 @@ export async function validateEmergencyStep2(req: AuthenticatedRequest, res: Res
  * Submits justification, verifies waiting period / unreachable status, or executes instant unlock if owner.
  */
 export async function completeEmergencyUnlock(req: AuthenticatedRequest, res: Response) {
-  const { noteId, userPassword, totpCode, notePassword, reason, acknowledgedWarning, skipWaitingPeriodOverride } = req.body;
+  const { noteId, userPassword, totpCode, notePassword, reason, acknowledgedWarning } = req.body;
   const userId = req.user?.id!;
 
   const note = await prisma.secretNote.findUnique({
@@ -523,7 +523,7 @@ export async function completeEmergencyUnlock(req: AuthenticatedRequest, res: Re
   const isOwnerUnreachable = hoursSinceOwnerCheckIn >= note.waitingPeriodHours;
 
   // If not yet unreachable and no approved request, create or update a pending emergency request
-  if (!isOwnerUnreachable && !skipWaitingPeriodOverride) {
+  if (!isOwnerUnreachable) {
     const eligibleReleaseDate = new Date(new Date(note.ownerLastCheckInAt).getTime() + note.waitingPeriodHours * 60 * 60 * 1000);
 
     const emergencyRequest = await prisma.emergencyAccessRequest.create({
@@ -664,15 +664,19 @@ export async function denyEmergencyRequest(req: AuthenticatedRequest, res: Respo
  * (Allows submitting proof of death or trustee sign-off for post-death instructions)
  */
 export async function verifyPostDeathProtocol(req: AuthenticatedRequest, res: Response) {
-  const { noteId, verificationNotes, trusteeCode } = req.body;
+  const noteId = req.params.noteId || req.body.noteId;
+  const { verificationNotes } = req.body;
   const userId = req.user?.id!;
+
+  if (!noteId) return res.status(400).json({ error: 'Note id is required' });
 
   const note = await prisma.secretNote.findUnique({
     where: { id: noteId },
-    include: { owner: true },
   });
 
-  if (!note) return res.status(404).json({ error: 'Secret note not found' });
+  if (!note || (note.ownerId !== userId && note.designatedRecipientId !== userId)) {
+    return res.status(404).json({ error: 'Secret note not found' });
+  }
   if (note.category !== 'POST_DEATH') {
     return res.status(400).json({ error: 'This protocol only applies to Post-Death instructions' });
   }
@@ -704,7 +708,14 @@ export async function verifyPostDeathProtocol(req: AuthenticatedRequest, res: Re
   return res.json({
     success: true,
     message: 'Post-death protocol verified. Note is now unlocked for eligible recipient upon separate password entry.',
-    note: updatedNote,
+    note: {
+      id: updatedNote.id,
+      title: updatedNote.title,
+      category: updatedNote.category,
+      status: updatedNote.status,
+      postDeathVerified: updatedNote.postDeathVerified,
+      deathVerificationNotes: updatedNote.deathVerificationNotes,
+    },
   });
 }
 
@@ -753,7 +764,7 @@ export async function deleteSecretNote(req: AuthenticatedRequest, res: Response)
 export async function getRecoveryQuestion(req: AuthenticatedRequest, res: Response) {
   const { id } = req.params;
   const note = await prisma.secretNote.findUnique({ where: { id } });
-  if (!note) return res.status(404).json({ error: 'Secret note not found' });
+  if (!note || note.ownerId !== req.user?.id) return res.status(404).json({ error: 'Secret note not found' });
 
   let recoveryQuestionsList: Array<{ id: number; question: string }> = [];
   if (note.recoveryQuestions) {
@@ -799,7 +810,7 @@ export async function recoverOrResetPassword(req: AuthenticatedRequest, res: Res
   const cleanAnswer = recoveryAnswer.trim().toLowerCase();
 
   const note = await prisma.secretNote.findUnique({ where: { id } });
-  if (!note) return res.status(404).json({ error: 'Secret note not found' });
+  if (!note || note.ownerId !== userId) return res.status(404).json({ error: 'Secret note not found' });
 
   // Parse questions list
   let storedQuestions: Array<{

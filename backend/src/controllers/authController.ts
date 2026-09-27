@@ -7,6 +7,7 @@ import { prisma } from '../prisma/client';
 import { config } from '../config';
 import { logAuditEvent } from '../utils/auditLogger';
 import { AuthenticatedRequest } from '../middlewares/auth';
+import { issueTokenPair, rotateRefreshToken, revokeRefreshToken, revokeAllRefreshTokens } from '../utils/tokens';
 
 export async function register(req: Request, res: Response) {
   const { email, password, name, role } = req.body;
@@ -52,11 +53,7 @@ export async function register(req: Request, res: Response) {
     data: { lastLogin: now, lastCheckIn: now },
   });
 
-  const token = jwt.sign(
-    { userId: user.id, email: user.email, name: user.name, role: user.role },
-    config.jwtSecret,
-    { expiresIn: config.jwtExpiresIn as any }
-  );
+  const { token, refreshToken } = await issueTokenPair(user, req);
 
   await logAuditEvent({
     eventType: 'AUTH_REGISTER_SUCCESS',
@@ -70,6 +67,7 @@ export async function register(req: Request, res: Response) {
 
   return res.status(201).json({
     token,
+    refreshToken,
     user: {
       id: user.id,
       email: user.email,
@@ -129,7 +127,7 @@ export async function login(req: Request, res: Response) {
       return res.status(200).json({
         requires2FA: true,
         message: 'Two-factor authentication code required',
-        tempToken: jwt.sign({ userId: user.id, is2FAPending: true }, config.jwtSecret, { expiresIn: '5m' as any }),
+        tempToken: jwt.sign({ userId: user.id, is2FAPending: true, type: '2fa_pending' }, config.jwtSecret, { expiresIn: '5m' as any }),
       });
     }
 
@@ -160,11 +158,7 @@ export async function login(req: Request, res: Response) {
     data: { lastLogin: now, lastCheckIn: now },
   });
 
-  const token = jwt.sign(
-    { userId: user.id, email: user.email, name: user.name, role: user.role },
-    config.jwtSecret,
-    { expiresIn: config.jwtExpiresIn as any }
-  );
+  const { token, refreshToken } = await issueTokenPair(user, req);
 
   await logAuditEvent({
     eventType: 'AUTH_LOGIN_SUCCESS',
@@ -199,6 +193,7 @@ export async function login(req: Request, res: Response) {
 
   return res.json({
     token,
+    refreshToken,
     user: {
       id: user.id,
       email: user.email,
@@ -336,6 +331,7 @@ export async function disable2FA(req: AuthenticatedRequest, res: Response) {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) return res.status(404).json({ error: 'User not found' });
 
+  if (!password) return res.status(400).json({ error: 'Password is required' });
   const isValid = await bcrypt.compare(password, user.passwordHash);
   if (!isValid) return res.status(401).json({ error: 'Invalid password' });
 
@@ -343,6 +339,8 @@ export async function disable2FA(req: AuthenticatedRequest, res: Response) {
     where: { id: user.id },
     data: { totpEnabled: false, totpSecret: null },
   });
+  await revokeAllRefreshTokens(user.id);
+  const session = await issueTokenPair(user, req);
 
   await logAuditEvent({
     eventType: 'AUTH_2FA_DISABLED',
@@ -353,7 +351,7 @@ export async function disable2FA(req: AuthenticatedRequest, res: Response) {
     userAgent: req.headers['user-agent'],
   });
 
-  return res.json({ success: true, message: 'Two-factor authentication disabled' });
+  return res.json({ success: true, message: 'Two-factor authentication disabled', ...session });
 }
 
 export async function ownerCheckIn(req: AuthenticatedRequest, res: Response) {
@@ -488,6 +486,10 @@ export async function changePassword(req: AuthenticatedRequest, res: Response) {
     },
   });
 
+  // A password change signs out every other device; this device gets a fresh session.
+  await revokeAllRefreshTokens(user.id);
+  const session = await issueTokenPair(user, req);
+
   await logAuditEvent({
     eventType: 'AUTH_PASSWORD_CHANGED',
     severity: 'INFO',
@@ -497,6 +499,36 @@ export async function changePassword(req: AuthenticatedRequest, res: Response) {
     userAgent: req.headers['user-agent'],
   });
 
-  return res.json({ success: true, message: 'Password changed successfully' });
+  return res.json({ success: true, message: 'Password changed successfully', ...session });
 }
 
+
+/**
+ * Exchange a refresh token for a new access + refresh token pair (rotation).
+ */
+export async function refreshSession(req: Request, res: Response) {
+  const { refreshToken } = req.body || {};
+  if (!refreshToken || typeof refreshToken !== 'string') {
+    return res.status(400).json({ error: 'Refresh token is required' });
+  }
+
+  const result = await rotateRefreshToken(refreshToken, req);
+  if (!result.ok) {
+    // 'stale' = another tab just rotated this token; the client should pick up the newer one.
+    const code = result.reason === 'stale' ? 'REFRESH_STALE' : 'REFRESH_INVALID';
+    return res.status(401).json({ error: 'Session expired. Please sign in again.', code });
+  }
+
+  return res.json({ token: result.token, refreshToken: result.refreshToken });
+}
+
+/**
+ * Revoke the given refresh token so it can't be used after sign-out.
+ */
+export async function logoutSession(req: Request, res: Response) {
+  const { refreshToken } = req.body || {};
+  if (refreshToken && typeof refreshToken === 'string') {
+    await revokeRefreshToken(refreshToken);
+  }
+  return res.json({ success: true });
+}

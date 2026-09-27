@@ -4,11 +4,76 @@ import { prisma } from '../prisma/client';
 
 import { logAuditEvent } from '../utils/auditLogger';
 
+// Fields in trashed snapshots that must never leave the server (ciphertext, keys, hashes).
+const SECRET_SNAPSHOT_FIELDS = [
+  'encryptedPassword',
+  'encryptedContent',
+  'notePasswordHash',
+  'recoveryAnswerHash',
+  'recoveryPayload',
+  'recoveryQuestions',
+  'salt',
+  'iv',
+  'authTag',
+  'passwordHash',
+  'totpSecret',
+];
+
+/**
+ * Trash is shared between partners, except for items that were private to the person who
+ * deleted them: secret notes, unshared items and personal vault entries. Snapshots are
+ * JSON.stringify output, so the flags appear exactly as `"isShared":false` / `"isPersonal":true`.
+ */
+function visibleTrashWhere(userId: string) {
+  return {
+    OR: [
+      { deletedById: userId },
+      {
+        AND: [
+          { itemType: { not: 'SECRET_NOTE' } },
+          { NOT: { itemData: { contains: '"isShared":false' } } },
+          { NOT: { itemData: { contains: '"isPersonal":true' } } },
+        ],
+      },
+    ],
+  };
+}
+
+function sanitizeSnapshot(itemData: string): any {
+  let parsed: any;
+  try {
+    parsed = JSON.parse(itemData);
+  } catch {
+    return {};
+  }
+  if (parsed && typeof parsed === 'object') {
+    for (const field of SECRET_SNAPSHOT_FIELDS) delete parsed[field];
+  }
+  return parsed;
+}
+
+function toClientTrashItem<T extends { itemData: string }>(item: T) {
+  const parsedData = sanitizeSnapshot(item.itemData);
+  return { ...item, itemData: JSON.stringify(parsedData), parsedData };
+}
+
+async function findVisibleTrashItem(id: string, userId: string) {
+  return prisma.trashItem.findFirst({
+    where: { AND: [{ id }, visibleTrashWhere(userId)] },
+    include: {
+      deletedBy: {
+        select: { id: true, name: true, email: true, role: true, avatar: true },
+      },
+    },
+  });
+}
+
 export async function getTrashItems(req: AuthenticatedRequest, res: Response) {
   try {
     const { type, search } = req.query;
+    const userId = req.user?.id!;
 
-    const whereClause: any = {};
+    const whereClause: any = { AND: [visibleTrashWhere(userId)] };
 
     if (type && type !== 'ALL') {
       whereClause.itemType = String(type);
@@ -35,6 +100,7 @@ export async function getTrashItems(req: AuthenticatedRequest, res: Response) {
       prisma.trashItem.count({ where: whereClause }),
       prisma.trashItem.groupBy({
         by: ['itemType'],
+        where: visibleTrashWhere(userId),
         _count: { id: true },
       }),
     ]);
@@ -59,7 +125,7 @@ export async function getTrashItems(req: AuthenticatedRequest, res: Response) {
     });
 
     return res.json({
-      items,
+      items: items.map(toClientTrashItem),
       total,
       countsByType,
     });
@@ -73,30 +139,13 @@ export async function getTrashItemById(req: AuthenticatedRequest, res: Response)
   try {
     const { id } = req.params;
 
-    const item = await prisma.trashItem.findUnique({
-      where: { id },
-      include: {
-        deletedBy: {
-          select: { id: true, name: true, email: true, role: true, avatar: true },
-        },
-      },
-    });
+    const item = await findVisibleTrashItem(id, req.user?.id!);
 
     if (!item) {
       return res.status(404).json({ error: 'Trash item not found' });
     }
 
-    let parsedData: any = {};
-    try {
-      parsedData = JSON.parse(item.itemData);
-    } catch (e) {
-      parsedData = item.itemData;
-    }
-
-    return res.json({
-      ...item,
-      parsedData,
-    });
+    return res.json(toClientTrashItem(item));
   } catch (error) {
     console.error('Failed to get trash item by id:', error);
     return res.status(500).json({ error: 'Failed to fetch trash item details' });
@@ -108,14 +157,7 @@ export async function restoreTrashItem(req: AuthenticatedRequest, res: Response)
     const { id } = req.params;
     const userId = req.user?.id!;
 
-    const trashItem = await prisma.trashItem.findUnique({
-      where: { id },
-      include: {
-        deletedBy: {
-          select: { id: true, name: true, email: true },
-        },
-      },
-    });
+    const trashItem = await findVisibleTrashItem(id, userId);
 
     if (!trashItem) {
       return res.status(404).json({ error: 'Trash item not found' });
@@ -362,7 +404,7 @@ export async function deleteTrashItemPermanently(req: AuthenticatedRequest, res:
     const { reason } = req.body;
     const userId = req.user?.id!;
 
-    const item = await prisma.trashItem.findUnique({ where: { id } });
+    const item = await findVisibleTrashItem(id, userId);
     if (!item) {
       return res.status(404).json({ error: 'Trash item not found' });
     }
@@ -396,12 +438,17 @@ export async function updateTrashItemReason(req: AuthenticatedRequest, res: Resp
     const { id } = req.params;
     const { deleteReason } = req.body;
 
+    const existing = await findVisibleTrashItem(id, req.user?.id!);
+    if (!existing) {
+      return res.status(404).json({ error: 'Trash item not found' });
+    }
+
     const item = await prisma.trashItem.update({
       where: { id },
       data: { deleteReason: deleteReason?.trim() || null },
     });
 
-    return res.json({ success: true, item });
+    return res.json({ success: true, item: toClientTrashItem(item) });
   } catch (error) {
     console.error('Failed to update deletion reason:', error);
     return res.status(500).json({ error: 'Failed to update deletion reason' });
@@ -413,7 +460,7 @@ export async function emptyTrash(req: AuthenticatedRequest, res: Response) {
     const { type, reason } = req.body || req.query;
     const userId = req.user?.id!;
 
-    const whereClause: any = {};
+    const whereClause: any = { AND: [visibleTrashWhere(userId)] };
     if (type && type !== 'ALL') {
       whereClause.itemType = String(type);
     }

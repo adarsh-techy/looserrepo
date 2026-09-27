@@ -1,7 +1,8 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HttpServer } from 'http';
-import jwt from 'jsonwebtoken';
 import { config } from './config';
+import { prisma } from './prisma/client';
+import { verifyAccessToken } from './utils/tokens';
 
 let io: SocketIOServer | null = null;
 const userSocketMap = new Map<string, Set<string>>(); // userId -> Set of socketIds
@@ -36,7 +37,7 @@ export function initializeSocket(httpServer: HttpServer) {
     }
 
     try {
-      const decoded = jwt.verify(token, config.jwtSecret) as { userId: string; email: string };
+      const decoded = verifyAccessToken(token);
       socket.data.userId = decoded.userId;
       socket.data.email = decoded.email;
       next();
@@ -68,6 +69,46 @@ export function initializeSocket(httpServer: HttpServer) {
     // Client acknowledging or silencing siren
     socket.on('acknowledge_siren', (data: { alertId: string }) => {
       console.log(`[Socket] User acknowledged siren for alert:`, data.alertId);
+    });
+
+    // Real-time workspace theme change sync
+    socket.on('change_workspace_theme', async (data: { colorTheme?: string; themeMode?: string; role?: string }) => {
+      try {
+        const actorRole = (socket.data.email === 'user2@looser.vault' || data?.role === 'NS') ? 'NS' : 'AD';
+        const actorName = actorRole === 'NS' ? 'Bob Vance' : 'Adarsh';
+        const updateData: any = {
+          updatedByRole: actorRole,
+          updatedByName: actorName,
+        };
+        if (data.colorTheme && (data.colorTheme === 'default' || data.colorTheme === 'red-white')) {
+          updateData.colorTheme = data.colorTheme;
+        }
+        if (data.themeMode && (data.themeMode === 'dark' || data.themeMode === 'light')) {
+          updateData.themeMode = data.themeMode;
+        }
+
+        const setting = await prisma.workspaceSetting.upsert({
+          where: { id: 'default' },
+          create: {
+            id: 'default',
+            colorTheme: updateData.colorTheme || 'default',
+            themeMode: updateData.themeMode || 'dark',
+            updatedByRole: actorRole,
+            updatedByName: actorName,
+          },
+          update: updateData,
+        });
+
+        io?.emit('workspace_theme_changed', {
+          colorTheme: setting.colorTheme,
+          themeMode: setting.themeMode,
+          updatedByRole: setting.updatedByRole,
+          updatedByName: setting.updatedByName,
+          updatedAt: setting.updatedAt,
+        });
+      } catch (err: any) {
+        console.error('[Socket] change_workspace_theme error:', err);
+      }
     });
   });
 

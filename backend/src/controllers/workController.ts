@@ -177,6 +177,9 @@ export async function updateWork(req: AuthenticatedRequest, res: Response) {
 
   const existing = await prisma.workProject.findUnique({ where: { id } });
   if (!existing) return res.status(404).json({ error: 'Work project not found' });
+  if (!existing.isShared && existing.ownerId !== userId) {
+    return res.status(403).json({ error: 'Unauthorized access to this work project' });
+  }
 
   const updated = await prisma.workProject.update({
     where: { id },
@@ -202,7 +205,7 @@ export async function updateWork(req: AuthenticatedRequest, res: Response) {
       dbDueDate: dbDueDate !== undefined ? (dbDueDate ? new Date(dbDueDate) : null) : existing.dbDueDate,
       projectDueDate: projectDueDate !== undefined ? (projectDueDate ? new Date(projectDueDate) : null) : existing.projectDueDate,
       status: status !== undefined ? status : existing.status,
-      isShared: isShared !== undefined ? isShared : existing.isShared,
+      isShared: isShared !== undefined && existing.ownerId === userId ? isShared : existing.isShared,
     },
     include: {
       owner: { select: { id: true, name: true, email: true, role: true } },
@@ -228,6 +231,9 @@ export async function deleteWork(req: AuthenticatedRequest, res: Response) {
 
   const existing = await prisma.workProject.findUnique({ where: { id } });
   if (!existing) return res.status(404).json({ error: 'Work project not found' });
+  if (!existing.isShared && existing.ownerId !== userId) {
+    return res.status(403).json({ error: 'Unauthorized access to this work project' });
+  }
 
   // Move snapshot to Trash
   await moveToTrash({

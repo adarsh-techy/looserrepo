@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config';
 import { prisma } from '../prisma/client';
 import rateLimit from 'express-rate-limit';
+import { verifyAccessToken } from '../utils/tokens';
 
 export interface AuthenticatedRequest extends Request {
   user?: {
@@ -10,8 +11,22 @@ export interface AuthenticatedRequest extends Request {
     email: string;
     name: string;
     role: string;
+    pagePermissions: string[];
   };
   reauthVerified?: boolean;
+}
+
+/** Page permissions are stored as a JSON string; AD always has full access. */
+export function parsePagePermissions(raw: string | null | undefined, role: string): string[] {
+  let perms: string[] = ['*'];
+  try {
+    const parsed = JSON.parse(raw || '["*"]');
+    if (Array.isArray(parsed)) perms = parsed;
+  } catch {
+    perms = ['*'];
+  }
+  if (role === 'AD' && !perms.includes('*')) perms.push('*');
+  return perms;
 }
 
 /**
@@ -24,25 +39,34 @@ export async function requireAuth(req: AuthenticatedRequest, res: Response, next
   }
 
   const token = authHeader.split(' ')[1];
+  let decoded: { userId: string; email: string };
   try {
-    const decoded = jwt.verify(token, config.jwtSecret) as { userId: string; email: string };
+    decoded = verifyAccessToken(token);
+  } catch (err: any) {
+    // `code` lets the client tell "refresh and retry" apart from "log out".
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token expired. Please re-authenticate.', code: 'TOKEN_EXPIRED' });
+    }
+    return res.status(401).json({ error: 'Unauthorized: Invalid token signature', code: 'TOKEN_INVALID' });
+  }
+
+  // Outside the try above: a database outage must surface as a 500, not as "invalid token"
+  // (which would log the user out).
+  try {
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      select: { id: true, email: true, name: true, role: true },
+      select: { id: true, email: true, name: true, role: true, pagePermissions: true },
     });
 
     if (!user) {
-      return res.status(401).json({ error: 'Unauthorized: User account no longer exists' });
+      return res.status(401).json({ error: 'Unauthorized: User account no longer exists', code: 'TOKEN_INVALID' });
     }
 
-    req.user = user;
-    next();
-  } catch (err: any) {
-    if (err.name === 'TokenExpiredError') {
-      return res.status(401).json({ error: 'Token expired. Please re-authenticate.' });
-    }
-    return res.status(401).json({ error: 'Unauthorized: Invalid token signature' });
+    req.user = { ...user, pagePermissions: parsePagePermissions(user.pagePermissions, user.role) };
+  } catch (err) {
+    return next(err);
   }
+  next();
 }
 
 /**
@@ -79,6 +103,15 @@ export const authRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many authentication attempts. Please try again in 15 minutes.' },
+});
+
+// Separate budget from login: every open tab refreshes roughly every 15 minutes.
+export const refreshRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many session refresh attempts. Please try again shortly.' },
 });
 
 export const unlockRateLimiter = rateLimit({
