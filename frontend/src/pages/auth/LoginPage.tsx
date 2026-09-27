@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { setAuthSuccess } from '../../store/slices/core/authSlice';
 import { toggleTheme, showToast } from '../../store/slices/core/uiSlice';
 import { api } from '../../services/api';
-import { Lock, Mail, KeyRound, Loader2, ArrowRight, Sun, Moon } from 'lucide-react';
+import { Lock, Mail, KeyRound, Loader2, ArrowRight, Sun, Moon, Check, Sparkles } from 'lucide-react';
 import logoImg from '../../assets/a.png';
 
 export const LoginPage: React.FC = () => {
@@ -16,6 +16,15 @@ export const LoginPage: React.FC = () => {
   const [requires2FA, setRequires2FA] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePrefill = (targetEmail: string) => {
+    setEmail(targetEmail);
+    setError(null);
+    setTimeout(() => {
+      passwordInputRef.current?.focus();
+    }, 60);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,63 +107,85 @@ export const LoginPage: React.FC = () => {
             </div>
           )}
 
-          {/* Quick Partner Prefill Buttons */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between px-0.5">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Partner Quick Fill
+          {/* Quick Partner Prefill Cards (Light Color Background & 100% Responsive) */}
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span>Partner Quick Fill</span>
               </span>
               <span className="text-[10px] text-slate-400 dark:text-slate-500">
-                Click to prefill email
+                Tap card to fill
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
-              {/* Ns: Dark Green bg, text white */}
+
+            <div className="grid grid-cols-1 min-[380px]:grid-cols-2 gap-2 sm:gap-2.5">
+              {/* Ns: Light Green Background Card with Dark Green Badge (text white) */}
               <button
                 type="button"
                 id="prefill-ns-btn"
-                onClick={() => {
-                  setEmail('vishnuns@gmail.com');
-                  setError(null);
-                }}
-                className={`group relative p-2.5 sm:p-3 rounded-2xl bg-emerald-800 hover:bg-emerald-700 active:scale-[0.98] text-white shadow-md shadow-emerald-950/25 border border-emerald-600/40 transition-all text-left cursor-pointer ${
+                onClick={() => handlePrefill('vishnuns@gmail.com')}
+                className={`group relative p-2.5 sm:p-3 rounded-xl bg-emerald-50/90 hover:bg-emerald-100/90 dark:bg-emerald-950/30 dark:hover:bg-emerald-950/50 border transition-all text-left cursor-pointer touch-manipulation active:scale-[0.98] ${
                   email === 'vishnuns@gmail.com'
-                    ? 'ring-2 ring-emerald-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-950 shadow-emerald-800/40'
-                    : ''
+                    ? 'border-emerald-500 ring-2 ring-emerald-500/40 shadow-sm shadow-emerald-500/20'
+                    : 'border-emerald-200/90 dark:border-emerald-800/60 hover:border-emerald-300'
                 }`}
                 title="Prefill Ns - vishnuns@gmail.com"
               >
-                <div className="flex items-center justify-between gap-1.5 mb-0.5">
-                  <span className="text-xs sm:text-sm font-black tracking-wide text-white">Ns</span>
-                  <span className="w-2 h-2 rounded-full bg-emerald-300 ring-2 ring-emerald-500/40 group-hover:scale-125 transition-transform" />
+                <div className="flex items-center justify-between gap-1.5 mb-1.5">
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-800 dark:bg-emerald-700 text-white text-[11px] sm:text-xs font-black tracking-wide shadow-xs">
+                    Ns
+                  </span>
+                  <div className="flex items-center gap-1">
+                    {email === 'vishnuns@gmail.com' ? (
+                      <span className="p-0.5 rounded-full bg-emerald-600 text-white shadow-xs">
+                        <Check className="w-3 h-3 stroke-[3]" />
+                      </span>
+                    ) : (
+                      <span className="w-2 h-2 rounded-full bg-emerald-400/80 group-hover:scale-125 transition-transform" />
+                    )}
+                  </div>
                 </div>
-                <p className="text-[10px] sm:text-[11px] text-emerald-100 font-medium truncate font-mono">
+                <p className="text-xs sm:text-xs font-bold text-emerald-950 dark:text-emerald-100 break-all sm:break-normal truncate">
                   vishnuns@gmail.com
                 </p>
+                <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium">
+                  Partner NS
+                </span>
               </button>
 
-              {/* Ad: Dark Blue bg, text white */}
+              {/* Ad: Light Blue Background Card with Dark Blue Badge (text white) */}
               <button
                 type="button"
                 id="prefill-ad-btn"
-                onClick={() => {
-                  setEmail('adarsh@gmail.com');
-                  setError(null);
-                }}
-                className={`group relative p-2.5 sm:p-3 rounded-2xl bg-blue-900 hover:bg-blue-800 active:scale-[0.98] text-white shadow-md shadow-blue-950/25 border border-blue-700/40 transition-all text-left cursor-pointer ${
+                onClick={() => handlePrefill('adarsh@gmail.com')}
+                className={`group relative p-2.5 sm:p-3 rounded-xl bg-blue-50/90 hover:bg-blue-100/90 dark:bg-blue-950/30 dark:hover:bg-blue-950/50 border transition-all text-left cursor-pointer touch-manipulation active:scale-[0.98] ${
                   email === 'adarsh@gmail.com'
-                    ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-950 shadow-blue-800/40'
-                    : ''
+                    ? 'border-blue-500 ring-2 ring-blue-500/40 shadow-sm shadow-blue-500/20'
+                    : 'border-blue-200/90 dark:border-blue-800/60 hover:border-blue-300'
                 }`}
                 title="Prefill Ad - adarsh@gmail.com"
               >
-                <div className="flex items-center justify-between gap-1.5 mb-0.5">
-                  <span className="text-xs sm:text-sm font-black tracking-wide text-white">Ad</span>
-                  <span className="w-2 h-2 rounded-full bg-blue-300 ring-2 ring-blue-500/40 group-hover:scale-125 transition-transform" />
+                <div className="flex items-center justify-between gap-1.5 mb-1.5">
+                  <span className="px-2 py-0.5 rounded-md bg-blue-900 dark:bg-blue-800 text-white text-[11px] sm:text-xs font-black tracking-wide shadow-xs">
+                    Ad
+                  </span>
+                  <div className="flex items-center gap-1">
+                    {email === 'adarsh@gmail.com' ? (
+                      <span className="p-0.5 rounded-full bg-blue-600 text-white shadow-xs">
+                        <Check className="w-3 h-3 stroke-[3]" />
+                      </span>
+                    ) : (
+                      <span className="w-2 h-2 rounded-full bg-blue-400/80 group-hover:scale-125 transition-transform" />
+                    )}
+                  </div>
                 </div>
-                <p className="text-[10px] sm:text-[11px] text-blue-100 font-medium truncate font-mono">
+                <p className="text-xs sm:text-xs font-bold text-blue-950 dark:text-blue-100 break-all sm:break-normal truncate">
                   adarsh@gmail.com
                 </p>
+                <span className="text-[10px] text-blue-700 dark:text-blue-400 font-medium">
+                  Partner AD
+                </span>
               </button>
             </div>
           </div>
@@ -180,6 +211,7 @@ export const LoginPage: React.FC = () => {
               <div className="relative">
                 <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
                 <input
+                  ref={passwordInputRef}
                   type="password"
                   required
                   value={password}
