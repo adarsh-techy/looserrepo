@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../store';
 import { setAuthSuccess } from '../../store/slices/core/authSlice';
 import { toggleTheme, showToast } from '../../store/slices/core/uiSlice';
@@ -250,20 +249,6 @@ export const LoginPage: React.FC = () => {
               {requires2FA ? 'Verify 2FA & Access Vault' : 'Sign In to Secure Enclave'}
             </button>
           </form>
-
-          {/* Link to Register Page */}
-          <div className="pt-2 text-center">
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Don't have a partner account?{' '}
-              <Link
-                to="/register"
-                className="font-bold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition inline-flex items-center gap-1 cursor-pointer"
-              >
-                <span>Register here</span>
-                <ArrowRight className="w-3 h-3" />
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>

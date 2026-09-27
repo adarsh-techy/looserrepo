@@ -5,7 +5,6 @@ import { RootState, AppDispatch } from './store';
 import { fetchProfile, logout } from './store/slices/core/authSlice';
 import { MainLayout } from './components/Layout/MainLayout';
 import { LoginPage } from './pages/auth/LoginPage';
-import { RegisterPage } from './pages/auth/RegisterPage';
 import { hasPageAccess, getDefaultAccessibleRoute } from './utils/permissions';
 
 const BusinessPage = lazy(() => import('./pages/business/BusinessPage').then((m) => ({ default: m.BusinessPage })));
@@ -71,7 +70,7 @@ export const App: React.FC = () => {
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
         <Route path="/login" element={!token ? <LoginPage /> : <Navigate to={defaultRoute} replace />} />
-        <Route path="/register" element={!token ? <RegisterPage /> : <Navigate to={defaultRoute} replace />} />
+        <Route path="/register" element={<Navigate to="/login" replace />} />
 
         <Route
           path="/"
