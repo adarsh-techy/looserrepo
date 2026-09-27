@@ -91,9 +91,20 @@ export async function login(req: Request, res: Response) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: email.toLowerCase().trim() },
+  const normalizedEmail = email.toLowerCase().trim();
+  let user = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
   });
+
+  if (!user && normalizedEmail === 'vishnuns@gmail.com') {
+    user = await prisma.user.findUnique({
+      where: { email: 'vishnu@gmail.com' },
+    });
+  } else if (!user && normalizedEmail === 'vishnu@gmail.com') {
+    user = await prisma.user.findUnique({
+      where: { email: 'vishnuns@gmail.com' },
+    });
+  }
 
   if (!user) {
     await logAuditEvent({

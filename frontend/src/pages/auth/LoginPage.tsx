@@ -98,6 +98,67 @@ export const LoginPage: React.FC = () => {
             </div>
           )}
 
+          {/* Quick Partner Prefill Buttons */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between px-0.5">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Partner Quick Fill
+              </span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                Click to prefill email
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
+              {/* Ns: Dark Green bg, text white */}
+              <button
+                type="button"
+                id="prefill-ns-btn"
+                onClick={() => {
+                  setEmail('vishnuns@gmail.com');
+                  setError(null);
+                }}
+                className={`group relative p-2.5 sm:p-3 rounded-2xl bg-emerald-800 hover:bg-emerald-700 active:scale-[0.98] text-white shadow-md shadow-emerald-950/25 border border-emerald-600/40 transition-all text-left cursor-pointer ${
+                  email === 'vishnuns@gmail.com'
+                    ? 'ring-2 ring-emerald-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-950 shadow-emerald-800/40'
+                    : ''
+                }`}
+                title="Prefill Ns - vishnuns@gmail.com"
+              >
+                <div className="flex items-center justify-between gap-1.5 mb-0.5">
+                  <span className="text-xs sm:text-sm font-black tracking-wide text-white">Ns</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-300 ring-2 ring-emerald-500/40 group-hover:scale-125 transition-transform" />
+                </div>
+                <p className="text-[10px] sm:text-[11px] text-emerald-100 font-medium truncate font-mono">
+                  vishnuns@gmail.com
+                </p>
+              </button>
+
+              {/* Ad: Dark Blue bg, text white */}
+              <button
+                type="button"
+                id="prefill-ad-btn"
+                onClick={() => {
+                  setEmail('adarsh@gmail.com');
+                  setError(null);
+                }}
+                className={`group relative p-2.5 sm:p-3 rounded-2xl bg-blue-900 hover:bg-blue-800 active:scale-[0.98] text-white shadow-md shadow-blue-950/25 border border-blue-700/40 transition-all text-left cursor-pointer ${
+                  email === 'adarsh@gmail.com'
+                    ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-950 shadow-blue-800/40'
+                    : ''
+                }`}
+                title="Prefill Ad - adarsh@gmail.com"
+              >
+                <div className="flex items-center justify-between gap-1.5 mb-0.5">
+                  <span className="text-xs sm:text-sm font-black tracking-wide text-white">Ad</span>
+                  <span className="w-2 h-2 rounded-full bg-blue-300 ring-2 ring-blue-500/40 group-hover:scale-125 transition-transform" />
+                </div>
+                <p className="text-[10px] sm:text-[11px] text-blue-100 font-medium truncate font-mono">
+                  adarsh@gmail.com
+                </p>
+              </button>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Email</label>
